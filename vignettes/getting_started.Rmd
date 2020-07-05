@@ -1,0 +1,27 @@
+---
+title: "Getting_started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(rbackupr)
+```
+
+
+
+```{r}
+rb_drive_create_project(project = "testing", create = TRUE)
+```
+

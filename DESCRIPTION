@@ -1,0 +1,26 @@
+Package: rbackupr
+Title: An R package to backup folders to Google Drive with limited permissions 
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Giorgio",
+           family = "Comai",
+           role = c("aut", "cre"),
+           email = "g@giorgiocomai.eu",
+           comment = c(ORCID = "0000-0002-0515-9542"))
+Description: Backup files and folders to Google Drive without giving access to all of your drive.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    googledrive,
+    magrittr,
+    dplyr,
+    stringr,
+    fs
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.1.1
