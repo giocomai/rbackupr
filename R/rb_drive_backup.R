@@ -11,10 +11,10 @@
 #' rb_drive_create_project(project = "example")
 #' }
 #'
-rb_drive_create_project <- function(project,
-                                    base_folder = "rbackupr",
-                                    create = TRUE,
-                                    cache = TRUE) {
+rb_drive_find_project <- function(project,
+                                  base_folder = "rbackupr",
+                                  create = TRUE,
+                                  cache = TRUE) {
   if (cache == TRUE) {
     drive_project_folder_path <- fs::path("rbackupr_cache",
                                           stringr::str_c(base_folder, "-drive_project_folder.rds"))
@@ -24,8 +24,8 @@ rb_drive_create_project <- function(project,
   }
   googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
   googledrive::drive_auth(scopes = "https://www.googleapis.com/auth/drive.file")
-  base_folder_dribble <- rb_drive_base_folder(base_folder = base_folder,
-                                              cache = cache)
+  base_folder_dribble <- rb_drive_find_base_folder(base_folder = base_folder,
+                                                   cache = cache)
   base_folder_ls <- googledrive::drive_ls(path = base_folder_dribble)
   project_dribble <- base_folder_ls %>%
     dplyr::filter(name == project)
@@ -58,12 +58,12 @@ rb_drive_create_project <- function(project,
 #' @examples
 #'
 #' \dontrun {
-#' rb_drive_base_folder()
+#' rb_drive_find_base_folder()
 #' }
 #'
 
-rb_drive_base_folder <- function(base_folder = "rbackupr",
-                                 cache = TRUE) {
+rb_drive_find_base_folder <- function(base_folder = "rbackupr",
+                                      cache = TRUE) {
   if (cache == TRUE) {
     drive_base_folder_path <- fs::path("rbackupr_cache",
                                        stringr::str_c(base_folder, "-drive_base_folder.rds"))
@@ -92,4 +92,115 @@ rb_drive_base_folder <- function(base_folder = "rbackupr",
     readr::write_rds(x = rbackupr_base_dribble, path = drive_base_folder_path)
   }
   return(rbackupr_base_dribble)
+}
+
+
+#' Backup files
+#'
+#' @param path Local path where files to backup are stored.
+#' @param project Name of backup project
+#' @param glob Defaults to NULL. Can be used to filter type of files to upload, e.g. "*.jpg"
+#' @param recurse Defaults to TRUE. Recurse up to one level.
+#' @param create Logical, defaults to TRUE. Create folders if missing.
+#' @param cache Logical, defaults to TRUE. Stores locally cached information about base and project folder.
+#' @param base_folder Name of base folder, defaults to `rbackupr`
+#'
+#' @return
+#' @export
+#'
+#' @examples
+rb_backup <- function(path,
+                      project,
+                      glob = NULL,
+                      recurse = TRUE,
+                      create = TRUE,
+                      cache = TRUE,
+                      base_folder = "rbackupr") {
+
+  all_first_level_folders <- fs::dir_ls(path = path, recurse = FALSE, type = "directory")
+
+  project_folder_dribble <- rb_drive_find_project(project = project,
+                                                  base_folder = base_folder,
+                                                  create = create,
+                                                  cache = cache)
+
+  project_folder_ls <- googledrive::drive_ls(path = project_folder_dribble)
+
+  purrr::walk(.x = all_first_level_folders %>%
+                fs::path_file(),
+              .f = function(x) {
+                current_folder_dribble <- project_folder_ls %>%
+                  dplyr::filter(name == x)
+
+                if (nrow(current_folder_dribble)==0) {
+                  current_folder_dribble <- googledrive::drive_mkdir(name = x,
+                                                                     path = project_folder_dribble)
+                }
+
+                current_folder_dribble_ls <- googledrive::drive_ls(path = current_folder_dribble)
+
+                current_local_media <- fs::dir_ls(path = fs::path(path, x),
+                                                  recurse = FALSE,
+                                                  type = "file",
+                                                  glob = glob) %>%
+                  fs::path_file()
+
+                current_media_to_upload <- tibble::tibble(name = current_local_media) %>%
+                  dplyr::anti_join(y = current_folder_dribble_ls, by = "name") %>%
+                  dplyr::pull(name)
+
+                purrr::walk(.x = fs::path(path, x, current_media_to_upload),
+                            .f = function(current_media) {
+                              googledrive::drive_upload(media = current_media,
+                                                        path = current_folder_dribble)
+                            }
+                )
+
+                if (recurse == TRUE) {
+
+                  subfolder <- fs::dir_ls(path = fs::path(path, x), recurse = FALSE, type = "directory")
+
+                  if (length(subfolder)>0) {
+                    current_folder_dribble_ls_folders <- googledrive::drive_ls(path = current_folder_dribble,
+                                                                               type = "folder")
+
+
+                    purrr::walk(.x = subfolder %>%
+                                  fs::path_file(),
+                                .f = function(current_subfolder) {
+                                  current_subfolder_dribble <- current_folder_dribble_ls_folders %>%
+                                    dplyr::filter(name == current_subfolder)
+
+                                  if (nrow(current_subfolder_dribble)==0) {
+                                    current_subfolder_dribble <- googledrive::drive_mkdir(name = current_subfolder,
+                                                                                          path = current_folder_dribble)
+                                  }
+
+                                  current_subfolder_dribble_ls <- googledrive::drive_ls(path = current_subfolder_dribble)
+
+                                  current_local_media_subfolder <- fs::dir_ls(path = fs::path(path, x, current_subfolder),
+                                                                              recurse = FALSE,
+                                                                              type = "file",
+                                                                              glob = glob) %>%
+                                    fs::path_file()
+
+                                  current_media_subfolder_to_upload <- tibble::tibble(name = current_local_media_subfolder) %>%
+                                    dplyr::anti_join(y = current_subfolder_dribble_ls, by = "name") %>%
+                                    dplyr::pull(name)
+
+                                  purrr::walk(.x = fs::path(path, x, current_subfolder, current_media_subfolder_to_upload),
+                                              .f = function(current_media_subfolder) {
+                                                googledrive::drive_upload(media = current_media_subfolder,
+                                                                          path = current_subfolder_dribble)
+                                              }
+                                  )
+                                }
+                    )
+                  }
+
+                }
+
+              })
+
+
 }
