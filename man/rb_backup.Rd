@@ -7,6 +7,7 @@
 rb_backup(
   path,
   project,
+  first_level_folders = NULL,
   glob = NULL,
   recurse = TRUE,
   create = TRUE,
@@ -18,6 +19,8 @@ rb_backup(
 \item{path}{Local path where files to backup are stored.}
 
 \item{project}{Name of backup project}
+
+\item{first_level_folders}{Defaults to NULL. If included, clarifies which folders within the path should be uploaded, keeping the folder structure.}
 
 \item{glob}{Defaults to NULL. Can be used to filter type of files to upload, e.g. "*.jpg"}
 

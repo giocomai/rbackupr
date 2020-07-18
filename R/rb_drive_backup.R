@@ -99,6 +99,7 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
 #'
 #' @param path Local path where files to backup are stored.
 #' @param project Name of backup project
+#' @param first_level_folders Defaults to NULL. If included, clarifies which folders within the path should be uploaded, keeping the folder structure.
 #' @param glob Defaults to NULL. Can be used to filter type of files to upload, e.g. "*.jpg"
 #' @param recurse Defaults to TRUE. Recurse up to one level.
 #' @param create Logical, defaults to TRUE. Create folders if missing.
@@ -111,13 +112,16 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
 #' @examples
 rb_backup <- function(path,
                       project,
+                      first_level_folders = NULL,
                       glob = NULL,
                       recurse = TRUE,
                       create = TRUE,
                       cache = TRUE,
                       base_folder = "rbackupr") {
-
-  all_first_level_folders <- fs::dir_ls(path = path, recurse = FALSE, type = "directory")
+  if (is.null(first_level_folders)) {
+    first_level_folders <- fs::dir_ls(path = path, recurse = FALSE, type = "directory") %>%
+      fs::path_file()
+  }
 
   project_folder_dribble <- rb_drive_find_project(project = project,
                                                   base_folder = base_folder,
@@ -126,8 +130,7 @@ rb_backup <- function(path,
 
   project_folder_ls <- googledrive::drive_ls(path = project_folder_dribble)
 
-  purrr::walk(.x = all_first_level_folders %>%
-                fs::path_file(),
+  purrr::walk(.x = first_level_folders,
               .f = function(x) {
                 current_folder_dribble <- project_folder_ls %>%
                   dplyr::filter(name == x)
