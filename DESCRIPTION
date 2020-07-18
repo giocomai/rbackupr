@@ -16,7 +16,8 @@ Imports:
     magrittr,
     dplyr,
     stringr,
-    fs
+    fs,
+    readr
 Depends: 
     R (>= 2.10)
 Suggests: 
