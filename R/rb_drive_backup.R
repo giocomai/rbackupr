@@ -19,7 +19,7 @@ rb_drive_find_project <- function(project,
     drive_project_folder_path <- fs::path("rbackupr_cache",
                                           stringr::str_c(base_folder, "-drive_project_folder.rds"))
     if (fs::file_exists(drive_project_folder_path)==TRUE) {
-      return(readr::read_rds(path = drive_project_folder_path))
+      return(readr::read_rds(file = drive_project_folder_path))
     }
   }
   googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
@@ -41,7 +41,7 @@ rb_drive_find_project <- function(project,
   }
   if (cache == TRUE) {
     fs::dir_create(path = "rbackupr_cache")
-    readr::write_rds(x = project_dribble, path = drive_project_folder_path)
+    readr::write_rds(x = project_dribble, file = drive_project_folder_path)
   }
   project_dribble
 }
@@ -68,7 +68,7 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
     drive_base_folder_path <- fs::path("rbackupr_cache",
                                        stringr::str_c(base_folder, "-drive_base_folder.rds"))
     if (fs::file_exists(drive_base_folder_path)==TRUE) {
-      return(readr::read_rds(path = drive_base_folder_path))
+      return(readr::read_rds(file = drive_base_folder_path))
     }
   }
   googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
@@ -89,7 +89,7 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
   }
   if (cache == TRUE) {
     fs::dir_create(path = "rbackupr_cache")
-    readr::write_rds(x = rbackupr_base_dribble, path = drive_base_folder_path)
+    readr::write_rds(x = rbackupr_base_dribble, file = drive_base_folder_path)
   }
   return(rbackupr_base_dribble)
 }
