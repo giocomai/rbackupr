@@ -1,6 +1,6 @@
 Package: rbackupr
 Title: An R package to backup folders to Google Drive with limited permissions 
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "Giorgio",
            family = "Comai",
@@ -17,11 +17,12 @@ Imports:
     dplyr,
     stringr,
     fs,
-    readr
+    readr,
+    tibble
 Depends: 
     R (>= 2.10)
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
