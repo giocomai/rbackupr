@@ -23,7 +23,7 @@ A dribble corresponding to the project folder.
 Create rbackupr project
 }
 \examples{
-\dontrun {
+\dontrun{
 rb_drive_create_project(project = "example")
 }
 

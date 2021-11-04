@@ -18,8 +18,7 @@ rb_drive_find_base_folder(base_folder = "rbackupr", cache = TRUE)
 Create or get base folder
 }
 \examples{
-
-\dontrun {
+\dontrun{
 rb_drive_find_base_folder()
 }
 
