@@ -8,7 +8,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' rb_drive_create_project(project = "example")
+#' if (interactive()) {
+#' rb_drive_find_project(project = "example")
+#' }
 #' }
 #'
 rb_drive_find_project <- function(project,
@@ -56,6 +58,11 @@ rb_drive_find_project <- function(project,
 }
 
 
+#' @rdname rb_drive_find_project
+#' @examples rb_drive_create_project(project = "example")
+#' @export
+rb_drive_create_project <- rb_drive_find_project
+
 #' Create or get base folder
 #'
 #' @param base_folder Name of base folder, defaults to "rbackupr".
@@ -66,9 +73,10 @@ rb_drive_find_project <- function(project,
 #'
 #' @examples
 #' \dontrun{
+#' if (interactive()) {
 #' rb_drive_find_base_folder()
 #' }
-#'
+#' }
 rb_drive_find_base_folder <- function(base_folder = "rbackupr",
                                       cache = TRUE) {
   if (cache == TRUE) {
@@ -124,6 +132,11 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' if (interactive()) {
+#' rb_backup()
+#' }
+#' }
 rb_backup <- function(path,
                       project,
                       first_level_folders = NULL,

@@ -2,9 +2,17 @@
 % Please edit documentation in R/rb_drive_backup.R
 \name{rb_drive_find_project}
 \alias{rb_drive_find_project}
+\alias{rb_drive_create_project}
 \title{Create rbackupr project}
 \usage{
 rb_drive_find_project(
+  project,
+  base_folder = "rbackupr",
+  create = TRUE,
+  cache = TRUE
+)
+
+rb_drive_create_project(
   project,
   base_folder = "rbackupr",
   create = TRUE,
@@ -24,7 +32,10 @@ Create rbackupr project
 }
 \examples{
 \dontrun{
-rb_drive_create_project(project = "example")
+if (interactive()) {
+rb_drive_find_project(project = "example")
+}
 }
 
+rb_drive_create_project(project = "example")
 }

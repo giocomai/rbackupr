@@ -38,3 +38,10 @@ rb_backup(
 \description{
 Backup files
 }
+\examples{
+\dontrun{
+if (interactive()) {
+rb_backup()
+}
+}
+}

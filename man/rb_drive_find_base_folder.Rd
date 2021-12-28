@@ -19,7 +19,8 @@ Create or get base folder
 }
 \examples{
 \dontrun{
+if (interactive()) {
 rb_drive_find_base_folder()
 }
-
+}
 }
