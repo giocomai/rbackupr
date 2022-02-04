@@ -13,15 +13,15 @@ rb_get_cache_folder(path = NULL)
 \item{path}{A path to a location used for caching data. If the folder does not exist, it will be created.}
 }
 \value{
-The path to the caching folder, if previously set; the same path as given to the function; or the default, `rb_data` is none is given.
+The path to the caching folder, if previously set; the same path as given to the function; or the default, `rbackupr_data` is none is given.
 }
 \description{
-Consider using a folder out of your current project directory, e.g. `rb_set_cache_folder("~/R/rb_data/")`: you will be able to use the same cache in different projects, and prevent cached files from being sync-ed if you use services such as Nextcloud or Dropbox.
+Consider using a folder out of your current project directory, e.g. `rb_set_cache_folder("~/R/rbackupr_data/")`: you will be able to use the same cache in different projects, and prevent cached files from being sync-ed if you use services such as Nextcloud or Dropbox.
 }
 \examples{
 \donttest{
 if (interactive()) {
-  rb_set_cache_folder(fs::path(fs::path_home_r(), "R", "rb_data"))
+  rb_set_cache_folder(fs::path(fs::path_home_r(), "R", "rbackupr_data"))
 }
 }
 rb_get_cache_folder()

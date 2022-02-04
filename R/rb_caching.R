@@ -31,29 +31,29 @@ rb_create_cache_folder <- function(ask = TRUE) {
 
 #' Set folder for caching data
 #'
-#' Consider using a folder out of your current project directory, e.g. `rb_set_cache_folder("~/R/rb_data/")`: you will be able to use the same cache in different projects, and prevent cached files from being sync-ed if you use services such as Nextcloud or Dropbox.
+#' Consider using a folder out of your current project directory, e.g. `rb_set_cache_folder("~/R/rbackupr_data/")`: you will be able to use the same cache in different projects, and prevent cached files from being sync-ed if you use services such as Nextcloud or Dropbox.
 #'
 #' @param path A path to a location used for caching data. If the folder does not exist, it will be created.
 #'
-#' @return The path to the caching folder, if previously set; the same path as given to the function; or the default, `rb_data` is none is given.
+#' @return The path to the caching folder, if previously set; the same path as given to the function; or the default, `rbackupr_data` is none is given.
 #' @export
 
 #' @examples
 #' \donttest{
 #' if (interactive()) {
-#'   rb_set_cache_folder(fs::path(fs::path_home_r(), "R", "rb_data"))
+#'   rb_set_cache_folder(fs::path(fs::path_home_r(), "R", "rbackupr_data"))
 #' }
 #' }
 rb_set_cache_folder <- function(path = NULL) {
   if (is.null(path)) {
-    path <- Sys.getenv("rb_cache_folder")
+    path <- Sys.getenv("rbackupr_cache_folder")
   } else {
-    Sys.setenv(rb_cache_folder = path)
+    Sys.setenv(rbackupr_cache_folder = path)
   }
   if (path == "") {
-    path <- fs::path("rb_data")
+    path <- fs::path("rbackupr_data")
   }
-  invisible(path)
+  path
 }
 
 #' @rdname rb_set_cache_folder
@@ -75,7 +75,7 @@ rb_get_cache_folder <- rb_set_cache_folder
 #' }
 #' }
 rb_enable_cache <- function() {
-  Sys.setenv(rb_cache = TRUE)
+  Sys.setenv(rbackupr_cache = TRUE)
 }
 
 
@@ -91,7 +91,7 @@ rb_enable_cache <- function() {
 #' }
 #' }
 rb_disable_cache <- function() {
-  Sys.setenv(rb_cache = FALSE)
+  Sys.setenv(rbackupr_cache = FALSE)
 }
 
 #' Check caching status in the current session, and override it upon request
@@ -113,7 +113,7 @@ rb_check_cache <- function(cache = NULL) {
   if (is.null(cache) == FALSE) {
     return(as.logical(cache))
   }
-  current_cache <- Sys.getenv("rb_cache")
+  current_cache <- Sys.getenv("rbackupr_cache")
   if (current_cache == "") {
     as.logical(FALSE)
   } else {
@@ -154,3 +154,33 @@ rb_check_cache_folder <- function() {
   }
   TRUE
 }
+
+
+#' Set (or get) name of project for the current session.
+#'
+#' @param project Defaults to NULL. If given, it must be a character vector of
+#'   length one. Name of a project. It will be used as the root folder for your
+#'   current project, and located under the `base_folder` on your Google Drive.
+#'
+#' @return The project name, if previously set; the same as input if not NULL;
+#'   or the default, `rbackupr_data` is none is given.
+#' @export
+#' @examples
+#' rb_set_project(project = "weather_csv_files")
+rb_set_project <- function(project = NULL) {
+  if (is.null(path)) {
+    path <- Sys.getenv("rbackupr_cache_folder")
+  } else {
+    Sys.setenv(rbackupr_cache_folder = path)
+  }
+  if (path == "") {
+    path <- fs::path("rbackupr_data")
+  }
+  path
+}
+
+#' @rdname rb_set_project
+#' @examples
+#' rb_get_project()
+#' @export
+rb_get_project <- rb_set_project
