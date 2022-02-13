@@ -62,6 +62,7 @@
 <!-- badges: start -->
 
 <p>The goal of rbackupr is to facilitate online backups to from R. At the current stage, it facilitates backups only to Google Drive, but may support other services in the future.</p>
+<p><strong>Warning: This package is being overhauled and it is not functional at this stage</strong></p>
 <div class="section level2">
 <h2 id="core-motivation">Core motivation<a class="anchor" aria-label="anchor" href="#core-motivation"></a>
 </h2>
@@ -72,6 +73,8 @@
 <li>even if you use it locally, you may be concerned of the mistakes you could make by giving full access to all of your files to scripts written by you, or to packages published by a random GitHub user (such as the author of this package)</li>
 </ul>
 <p>While you can give full access to Google Drive if you so wish, <code>rbackupr</code> is developed based on the expectation that it will have only access to the <a href="https://developers.google.com/drive/api/v2/about-auth" class="external-link">“drive.file” scope of Google Drive</a>, i.e. that it have “access to files created or opened by the app”. In brief, of course you still need to trust the scripts you are running, but at least you can be sure that it will not mess with completely unrelated files you keep on Google Drive.</p>
+<p>See screenshot of Google authentication prompt, where it is clear that you give <code>rbackupr</code> access only to “the specific Google Drive files that you use with this app.”</p>
+<p><img src="reference/figures/google_login_screen.png" align="center"></p>
 <p>In order to reduce the impact of some of the issues that come with this choice, this app caches locally metadata about remote folders and files in order to speed up processing.</p>
 </div>
 <div class="section level2">
@@ -114,19 +117,19 @@
 
 
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">base_temp_folder</span><span class="op">)</span>
-<span class="co">#&gt; /tmp/RtmpSnjBZe/rbackupr_testing</span>
+<span class="co">#&gt; /tmp/Rtmp5iv4Ru/rbackupr_testing</span>
 <span class="co">#&gt; ├── data_34</span>
-<span class="co">#&gt; │   ├── spreadsheet_34_37a825275244.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_34_37a83e2eeda0.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_34_4a202fa0b4f0.csv</span>
+<span class="co">#&gt; │   └── spreadsheet_34_4a205379d43.csv</span>
 <span class="co">#&gt; ├── data_58</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_37a8294aa524.csv</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_37a83f83b781.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_58_37a84ad09f72.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_58_4a20120234ac.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_58_4a201be10a4b.csv</span>
+<span class="co">#&gt; │   └── spreadsheet_58_4a20257977cd.csv</span>
 <span class="co">#&gt; └── data_74</span>
-<span class="co">#&gt;     ├── spreadsheet_74_37a81f155b88.csv</span>
-<span class="co">#&gt;     ├── spreadsheet_74_37a84b9a03ef.csv</span>
-<span class="co">#&gt;     └── spreadsheet_74_37a86a250ed9.csv</span></code></pre></div>
-<p>By defaukt, <code>rbackupr</code> does not cache metadata files and folders it stores on Google Drive, but you are strongly encouraged to do so. You can do so with <code><a href="reference/rb_enable_cache.html">rb_enable_cache()</a></code>. By default, metadata will be cached in the current active directory, but if you use <code>rbackupr</code> with different projects, you may not want to leave files with cached metadata scattered around your local drive, but rather keep them in place where they can be accessed. Something like this could typically be included at the beginning of <code>rbackupr</code> backup scripts.</p>
+<span class="co">#&gt;     ├── spreadsheet_74_4a201d1ace31.csv</span>
+<span class="co">#&gt;     ├── spreadsheet_74_4a205c0a2588.csv</span>
+<span class="co">#&gt;     └── spreadsheet_74_4a207ad66edd.csv</span></code></pre></div>
+<p>By default, <code>rbackupr</code> does not cache metadata files and folders it stores on Google Drive, but you are strongly encouraged to do so. You can do so with <code><a href="reference/rb_enable_cache.html">rb_enable_cache()</a></code>. By default, metadata will be cached in the current active directory, but if you use <code>rbackupr</code> with different projects, you may not want to leave files with cached metadata scattered around your local drive, but rather keep them in place where they can be accessed. Something like this could typically be included at the beginning of <code>rbackupr</code> backup scripts.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span>
 <span class="fu"><a href="reference/rb_enable_cache.html">rb_enable_cache</a></span><span class="op">(</span><span class="op">)</span>
@@ -136,8 +139,53 @@
                                     <span class="st">"rb_data"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="reference/rb_create_cache_folder.html">rb_create_cache_folder</a></span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<p>To reduce mixing of files you uploaded with <code>rbackupr</code> with other files you likely have on Google Drive, all your files and folders are stored under a base folder, that by default is called “rbackupr”. You can call your base folder something else, you can have more than one base folder, but you’re probably fine just by keeping the defaults. Under your base folder, you will have a “project” folder, and under that folder, you will actually have all your files related to that project.</p>
+<p>No matter full path on your files on your hard drive, the folder you set up to backup will correspond to the project folder.</p>
+<p>So the first step you need to take, is set a project for the current session, and then actually create its own folder on Google Drive, if it doesn’t yet exist.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_set_cache_folder.html">rb_get_cache_folder</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="reference/rb_set_project.html">rb_set_project</a></span><span class="op">(</span>project <span class="op">=</span> <span class="st">"rbackupr_testing"</span><span class="op">)</span> <span class="co"># this will set the project for the current session</span>
+
+<span class="fu"><a href="reference/rb_drive_find_project.html">rb_drive_create_project</a></span><span class="op">(</span>create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># if it already exists, it just returns its dribble</span></code></pre></div>
+<p>At this stage, among all your files and folder on Google Drive, you should expect to find a folder called <code>rbackupr</code> by default (you can customise this in <code><a href="reference/rb_drive_find_project.html">rb_drive_create_project()</a></code>). Within that folder, you will find another folder, <code>rbackupr_testing</code> (the one we set as project). All the files you backup from now on in the current session will be located under this folder.</p>
+<p>Notice that since we are giving only the <code>drive.file</code> scope, i.e. only access to files and folders created with the current app, if you run <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code> you should only see those two folders and nothing else.</p>
+</div>
+<div class="section level2">
+<h2 id="creating-your-own-app">Creating your own app<a class="anchor" aria-label="anchor" href="#creating-your-own-app"></a>
+</h2>
+<p>For more details on creating your own app see in particular:</p>
+<ul>
+<li><a href="https://gargle.r-lib.org/articles/get-api-credentials.html" class="external-link">How to get your own API credentials</a></li>
+<li><a href="https://googledrive.tidyverse.org/articles/bring-your-own-app.html" class="external-link">Bring your own OAuth app or API key</a></li>
+</ul>
+<p>Creating your own app has many benefits; most importantly:</p>
+<ul>
+<li>you’re in control (well, Google is ultimately always in control, but at least it’s just you and them)</li>
+<li>you don’t risk hitting the rate limiting because some other user is busy with the same app</li>
+</ul>
+<p>Ultimately, <code>rbackupr</code> relies on <code>gargle</code> for the authentication, so you can still follow the relevant documentation to set some settings.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># See ?gargle_oauth_cache()</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>
+  gargle_oauth_email <span class="op">=</span> <span class="st">"jane@example.com"</span>,
+  gargle_oauth_cache <span class="op">=</span> <span class="st">"/path/to/folder/that/does/not/sync/to/cloud"</span>
+<span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="database-cache-structure">Database cache structure<a class="anchor" aria-label="anchor" href="#database-cache-structure"></a>
+</h2>
+<p>The local SQLite database created for caching has the following structure:</p>
+<ul>
+<li>a table with details about the “base_folder” (“rbackupr_base_folder”). This may well have a single row in many common use cases.</li>
+<li>a table with details about the project folders (“rbackupr_projects”). This will have one row per project created.</li>
+<li>one table per folder. It will be called “rbackupr_project_ProjectName”, where “ProjectName” is the name of the project, typically set with <code><a href="reference/rb_set_project.html">rb_set_project()</a></code>.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="things-to-keep-in-mind">Things to keep in mind<a class="anchor" aria-label="anchor" href="#things-to-keep-in-mind"></a>
+</h2>
+<p>Once authenticated, you can still use <code>googledrive</code>. Keep in mind that some things may not work as expected, due to the restricted access to Google Drive given by this app.</p>
+<p>For example, listing all files with <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code> will only list files created with this app.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
