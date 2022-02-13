@@ -144,6 +144,7 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
         value = base_folder_df
       )
     }
+    RSQLite::dbDisconnect(conn = db_connection)
   }
   base_folder_df
 }
