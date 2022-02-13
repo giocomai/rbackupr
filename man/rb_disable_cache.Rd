@@ -13,9 +13,5 @@ Nothing, used for its side effects.
 Disable caching for the current session
 }
 \examples{
-\donttest{
-if (interactive()) {
-  rb_disable_cache()
-}
-}
+rb_disable_cache()
 }

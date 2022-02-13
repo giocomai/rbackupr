@@ -1,6 +1,8 @@
 #' Creates the base cache folder where `rbackupr` caches data.
 #'
-#' @param ask Logical, defaults to TRUE. If FALSE, and cache folder does not exist, it just creates it without asking (useful for non-interactive sessions).
+#' @param ask Logical, defaults to TRUE. If FALSE, and cache folder does not
+#'   exist, it just creates it without asking (useful for non-interactive
+#'   sessions).
 #'
 #' @return Nothing, used for its side effects.
 #' @export
@@ -31,13 +33,17 @@ rb_create_cache_folder <- function(ask = TRUE) {
 
 #' Set folder for caching data
 #'
-#' Consider using a folder out of your current project directory, e.g. `rb_set_cache_folder("~/R/rbackupr_data/")`: you will be able to use the same cache in different projects, and prevent cached files from being sync-ed if you use services such as Nextcloud or Dropbox.
+#' Consider using a folder out of your current project directory, e.g.
+#' `rb_set_cache_folder("~/R/rbackupr_data/")`: you will be able to use the same
+#' cache in different projects, and prevent cached files from being sync-ed if
+#' you use services such as Nextcloud or Dropbox.
 #'
-#' @param path A path to a location used for caching data. If the folder does not exist, it will be created.
+#' @param path A path to a location used for caching data. If the folder does
+#'   not exist, it will be created.
 #'
-#' @return The path to the caching folder, if previously set; the same path as given to the function; or the default, `rbackupr_data` is none is given.
+#' @return The path to the caching folder, if previously set; the same path as
+#'   given to the function; or the default, `rbackupr_data` is none is given.
 #' @export
-
 #' @examples
 #' \donttest{
 #' if (interactive()) {
@@ -53,7 +59,7 @@ rb_set_cache_folder <- function(path = NULL) {
   if (path == "") {
     path <- fs::path("rbackupr_data")
   }
-  path
+  c(cache_folder = path)
 }
 
 #' @rdname rb_set_cache_folder
@@ -67,13 +73,8 @@ rb_get_cache_folder <- rb_set_cache_folder
 #'
 #' @return Nothing, used for its side effects.
 #' @export
-
 #' @examples
-#' \donttest{
-#' if (interactive()) {
 #'   rb_enable_cache()
-#' }
-#' }
 rb_enable_cache <- function() {
   Sys.setenv(rbackupr_cache = TRUE)
 }
@@ -83,13 +84,8 @@ rb_enable_cache <- function() {
 #'
 #' @return Nothing, used for its side effects.
 #' @export
-
 #' @examples
-#' \donttest{
-#' if (interactive()) {
-#'   rb_disable_cache()
-#' }
-#' }
+#' rb_disable_cache()
 rb_disable_cache <- function() {
   Sys.setenv(rbackupr_cache = FALSE)
 }
@@ -173,7 +169,7 @@ rb_set_project <- function(project = NULL) {
   } else {
     Sys.setenv(rbackupr_cache_folder = project)
   }
-  project
+  c(project = project)
 }
 
 #' @rdname rb_set_project
@@ -181,3 +177,49 @@ rb_set_project <- function(project = NULL) {
 #' rb_get_project()
 #' @export
 rb_get_project <- rb_set_project
+
+
+
+#' Gets location of cache file
+#'
+#' @param filename Defaults to "rbackupr_cache.sqlite". 
+#' @param cache_folder Defaults to folder set with `rb_set_cache_folder()`
+#'
+#' @return A character vector of length one with location of item cache file.
+#' @export
+#'
+#' @examples
+#'
+#' rb_set_cache_folder(path = tempdir())
+#' sqlite_cache_file_location <- rb_get_cache_file() # outputs location of cache file
+#' sqlite_cache_file_location
+rb_get_cache_file <- function(filename = "rbackupr_cache.sqlite",
+                              cache_folder = rbackupr::rb_get_cache_folder()) {
+  fs::path(cache_folder, 
+           filename)
+}
+
+#' Gets name of table inside the database
+#'
+#' @param type Defaults to "project". Type of cache file to output. Values
+#'   typically used by `rbackupr` include "base_folder", "projects", and
+#'   "project".
+#' @param project Defaults to project name set with
+#'   `rbackupr::rb_get_project()`. Ignored if the parameter type is not set to
+#'   "project"
+#'
+#' @return A character vector of length one with the name of the relevant table
+#'   in the cache file.
+#' @export
+#'
+#' @examples
+#' # outputs name of table used in the cache database
+#' rb_get_cache_table_name(type = "project", language = "testing_project")
+rb_get_cache_table_name <- function(type = "project",
+                                    project = rbackupr::rb_get_project()) {
+  if (type == "project") {
+    stringr::str_c("rbackupr_", type, "_", project) 
+  } else {
+    stringr::str_c("rbackupr_", type)
+  }
+}

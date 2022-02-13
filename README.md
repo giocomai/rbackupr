@@ -13,6 +13,9 @@ The goal of rbackupr is to facilitate online backups to from R. At the
 current stage, it facilitates backups only to Google Drive, but may
 support other services in the future.
 
+**Warning: This package is being overhauled and it is not functional at
+this stage**
+
 ## Core motivation
 
 By default, when you use the `googledrive` package you give access to
@@ -38,6 +41,12 @@ it have “access to files created or opened by the app”. In brief, of
 course you still need to trust the scripts you are running, but at least
 you can be sure that it will not mess with completely unrelated files
 you keep on Google Drive.
+
+See screenshot of Google authentication prompt, where it is clear that
+you give `rbackupr` access only to “the specific Google Drive files that
+you use with this app.”
+
+<img src="man/figures/google_login_screen.png" align="center"/>
 
 In order to reduce the impact of some of the issues that come with this
 choice, this app caches locally metadata about remote folders and files
@@ -88,21 +97,21 @@ purrr::walk(
 
 
 fs::dir_tree(base_temp_folder)
-#> /tmp/RtmpSnjBZe/rbackupr_testing
+#> /tmp/Rtmp5iv4Ru/rbackupr_testing
 #> ├── data_34
-#> │   ├── spreadsheet_34_37a825275244.csv
-#> │   └── spreadsheet_34_37a83e2eeda0.csv
+#> │   ├── spreadsheet_34_4a202fa0b4f0.csv
+#> │   └── spreadsheet_34_4a205379d43.csv
 #> ├── data_58
-#> │   ├── spreadsheet_58_37a8294aa524.csv
-#> │   ├── spreadsheet_58_37a83f83b781.csv
-#> │   └── spreadsheet_58_37a84ad09f72.csv
+#> │   ├── spreadsheet_58_4a20120234ac.csv
+#> │   ├── spreadsheet_58_4a201be10a4b.csv
+#> │   └── spreadsheet_58_4a20257977cd.csv
 #> └── data_74
-#>     ├── spreadsheet_74_37a81f155b88.csv
-#>     ├── spreadsheet_74_37a84b9a03ef.csv
-#>     └── spreadsheet_74_37a86a250ed9.csv
+#>     ├── spreadsheet_74_4a201d1ace31.csv
+#>     ├── spreadsheet_74_4a205c0a2588.csv
+#>     └── spreadsheet_74_4a207ad66edd.csv
 ```
 
-By defaukt, `rbackupr` does not cache metadata files and folders it
+By default, `rbackupr` does not cache metadata files and folders it
 stores on Google Drive, but you are strongly encouraged to do so. You
 can do so with `rb_enable_cache()`. By default, metadata will be cached
 in the current active directory, but if you use `rbackupr` with
@@ -122,6 +131,86 @@ rb_set_cache_folder(path = fs::path(fs::path_home_r(),
 rb_create_cache_folder(ask = FALSE)
 ```
 
+To reduce mixing of files you uploaded with `rbackupr` with other files
+you likely have on Google Drive, all your files and folders are stored
+under a base folder, that by default is called “rbackupr”. You can call
+your base folder something else, you can have more than one base folder,
+but you’re probably fine just by keeping the defaults. Under your base
+folder, you will have a “project” folder, and under that folder, you
+will actually have all your files related to that project.
+
+No matter full path on your files on your hard drive, the folder you set
+up to backup will correspond to the project folder.
+
+So the first step you need to take, is set a project for the current
+session, and then actually create its own folder on Google Drive, if it
+doesn’t yet exist.
+
 ``` r
-rb_get_cache_folder()
+rb_set_project(project = "rbackupr_testing") # this will set the project for the current session
+
+rb_drive_create_project(create = TRUE) # if it already exists, it just returns its dribble
 ```
+
+At this stage, among all your files and folder on Google Drive, you
+should expect to find a folder called `rbackupr` by default (you can
+customise this in `rb_drive_create_project()`). Within that folder, you
+will find another folder, `rbackupr_testing` (the one we set as
+project). All the files you backup from now on in the current session
+will be located under this folder.
+
+Notice that since we are giving only the `drive.file` scope, i.e. only
+access to files and folders created with the current app, if you run
+`googledrive::drive_ls()` you should only see those two folders and
+nothing else.
+
+## Creating your own app
+
+For more details on creating your own app see in particular:
+
+-   [How to get your own API
+    credentials](https://gargle.r-lib.org/articles/get-api-credentials.html)
+-   [Bring your own OAuth app or API
+    key](https://googledrive.tidyverse.org/articles/bring-your-own-app.html)
+
+Creating your own app has many benefits; most importantly:
+
+-   you’re in control (well, Google is ultimately always in control, but
+    at least it’s just you and them)
+-   you don’t risk hitting the rate limiting because some other user is
+    busy with the same app
+
+Ultimately, `rbackupr` relies on `gargle` for the authentication, so you
+can still follow the relevant documentation to set some settings.
+
+``` r
+# See ?gargle_oauth_cache()
+
+options(
+  gargle_oauth_email = "jane@example.com",
+  gargle_oauth_cache = "/path/to/folder/that/does/not/sync/to/cloud"
+)
+```
+
+## Database cache structure
+
+The local SQLite database created for caching has the following
+structure:
+
+-   a table with details about the “base_folder”
+    (“rbackupr_base_folder”). This may well have a single row in many
+    common use cases.
+-   a table with details about the project folders
+    (“rbackupr_projects”). This will have one row per project created.
+-   one table per folder. It will be called
+    “rbackupr_project_ProjectName”, where “ProjectName” is the name of
+    the project, typically set with `rb_set_project()`.
+
+## Things to keep in mind
+
+Once authenticated, you can still use `googledrive`. Keep in mind that
+some things may not work as expected, due to the restricted access to
+Google Drive given by this app.
+
+For example, listing all files with `googledrive::drive_ls()` will only
+list files created with this app.
