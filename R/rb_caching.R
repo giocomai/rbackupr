@@ -165,9 +165,9 @@ rb_check_cache_folder <- function() {
 #' rb_set_project(project = "weather_csv_files")
 rb_set_project <- function(project = NULL) {
   if (is.null(project)) {
-    project <- Sys.getenv("rbackupr_cache_folder")
+    project <- Sys.getenv("rbackupr_project")
   } else {
-    Sys.setenv(rbackupr_cache_folder = project)
+    Sys.setenv(rbackupr_project = project)
   }
   c(project = project)
 }
