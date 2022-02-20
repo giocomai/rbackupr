@@ -50,7 +50,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rb_backup</span><span class="op">(</span>
   <span class="va">path</span>,
-  <span class="va">project</span>,
+  project <span class="op">=</span> <span class="cn">NULL</span>,
   first_level_folders <span class="op">=</span> <span class="cn">NULL</span>,
   glob <span class="op">=</span> <span class="cn">NULL</span>,
   recurse <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -65,17 +65,22 @@
     <dl><dt>path</dt>
 <dd><p>Local path where files to backup are stored.</p></dd>
 <dt>project</dt>
-<dd><p>Name of backup project</p></dd>
+<dd><p>Defaults to NULL. Can be set once per session with
+`rb_get_project()`. If given, must be a character vector of length one:
+name of the project.</p></dd>
 <dt>first_level_folders</dt>
-<dd><p>Defaults to NULL. If included, clarifies which folders within the path should be uploaded, keeping the folder structure.</p></dd>
+<dd><p>Defaults to NULL. If given, clarifies which
+folders within the path should be uploaded, keeping the folder structure.</p></dd>
 <dt>glob</dt>
-<dd><p>Defaults to NULL. Can be used to filter type of files to upload, e.g. "*.jpg"</p></dd>
+<dd><p>Defaults to NULL. Can be used to filter type of files to upload,
+e.g. "*.jpg"</p></dd>
 <dt>recurse</dt>
 <dd><p>Defaults to TRUE. Recurse up to one level.</p></dd>
 <dt>create</dt>
 <dd><p>Logical, defaults to TRUE. Create folders if missing.</p></dd>
 <dt>cache</dt>
-<dd><p>Logical, defaults to TRUE. Stores locally cached information about base and project folder.</p></dd>
+<dd><p>Logical, defaults to TRUE. Stores locally cached information
+about base and project folder.</p></dd>
 <dt>base_folder</dt>
 <dd><p>Name of base folder, defaults to `rbackupr`</p></dd>
 </dl></div>
@@ -88,7 +93,7 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu">rb_backup</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu">rb_backup</span><span class="op">(</span>path <span class="op">=</span> <span class="st">"folder_to_backup"</span>, project <span class="op">=</span> <span class="st">"test_project"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
