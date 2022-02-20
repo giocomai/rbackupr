@@ -202,9 +202,10 @@ structure:
     common use cases.
 -   a table with details about the project folders
     (“rbackupr_projects”). This will have one row per project created.
--   one table per folder. It will be called
-    “rbackupr_project_ProjectName”, where “ProjectName” is the name of
-    the project, typically set with `rb_set_project()`.
+-   one table for folders and one for files under each project. They
+    will be called “rbackupr_folders_ProjectName” and
+    “rbackupr_files_ProjectName”, where “ProjectName” is the name of the
+    project, typically set with `rb_set_project()`.
 
 ## Things to keep in mind
 

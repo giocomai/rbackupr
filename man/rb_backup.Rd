@@ -6,7 +6,7 @@
 \usage{
 rb_backup(
   path,
-  project,
+  project = NULL,
   first_level_folders = NULL,
   glob = NULL,
   recurse = TRUE,
@@ -18,17 +18,22 @@ rb_backup(
 \arguments{
 \item{path}{Local path where files to backup are stored.}
 
-\item{project}{Name of backup project}
+\item{project}{Defaults to NULL. Can be set once per session with
+`rb_get_project()`. If given, must be a character vector of length one:
+name of the project.}
 
-\item{first_level_folders}{Defaults to NULL. If included, clarifies which folders within the path should be uploaded, keeping the folder structure.}
+\item{first_level_folders}{Defaults to NULL. If given, clarifies which
+folders within the path should be uploaded, keeping the folder structure.}
 
-\item{glob}{Defaults to NULL. Can be used to filter type of files to upload, e.g. "*.jpg"}
+\item{glob}{Defaults to NULL. Can be used to filter type of files to upload,
+e.g. "*.jpg"}
 
 \item{recurse}{Defaults to TRUE. Recurse up to one level.}
 
 \item{create}{Logical, defaults to TRUE. Create folders if missing.}
 
-\item{cache}{Logical, defaults to TRUE. Stores locally cached information about base and project folder.}
+\item{cache}{Logical, defaults to TRUE. Stores locally cached information
+about base and project folder.}
 
 \item{base_folder}{Name of base folder, defaults to `rbackupr`}
 }
@@ -41,7 +46,7 @@ Backup files
 \examples{
 \dontrun{
 if (interactive()) {
-rb_backup()
+  rb_backup(path = "folder_to_backup", project = "test_project")
 }
 }
 }
