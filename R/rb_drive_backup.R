@@ -49,9 +49,12 @@ rb_backup <- function(path,
   
   ## check if folders exist in cache
   
+  rb_update_folder_cache(dribble_id = project_folder_df,
+                         project = project,
+                         cache = cache)
   
   if (rb_check_cache(cache = cache)) {
-    table_name <- rb_get_cache_table_name(type = stringr::str_c("project", "_", project))
+    table_name <- rb_get_cache_table_name(type = stringr::str_c("folders", "_", project))
     
     db_connection <- RSQLite::dbConnect(
       drv = RSQLite::SQLite(),
