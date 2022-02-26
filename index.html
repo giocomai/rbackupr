@@ -76,6 +76,7 @@
 <p>See screenshot of Google authentication prompt, where it is clear that you give <code>rbackupr</code> access only to “the specific Google Drive files that you use with this app.”</p>
 <p><img src="reference/figures/google_login_screen.png" align="center"></p>
 <p>In order to reduce the impact of some of the issues that come with this choice, this app caches locally metadata about remote folders and files in order to speed up processing.</p>
+<p>An additional benefit of <code>rbackupr</code> is that it is agnostic about the location of the base folder, as it stores only relative path: it is possible to keep a folder up to date from different locations, or move a folder and have it updated without issues.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -117,18 +118,18 @@
 
 
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">base_temp_folder</span><span class="op">)</span>
-<span class="co">#&gt; /tmp/Rtmp5iv4Ru/rbackupr_testing</span>
+<span class="co">#&gt; /tmp/RtmpwuEIZx/rbackupr_testing</span>
 <span class="co">#&gt; ├── data_34</span>
-<span class="co">#&gt; │   ├── spreadsheet_34_4a202fa0b4f0.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_34_4a205379d43.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_34_5ce139b92a2e.csv</span>
+<span class="co">#&gt; │   └── spreadsheet_34_5ce154f88473.csv</span>
 <span class="co">#&gt; ├── data_58</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_4a20120234ac.csv</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_4a201be10a4b.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_58_4a20257977cd.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_58_5ce126b0f0c8.csv</span>
+<span class="co">#&gt; │   ├── spreadsheet_58_5ce139e68a68.csv</span>
+<span class="co">#&gt; │   └── spreadsheet_58_5ce15667f03c.csv</span>
 <span class="co">#&gt; └── data_74</span>
-<span class="co">#&gt;     ├── spreadsheet_74_4a201d1ace31.csv</span>
-<span class="co">#&gt;     ├── spreadsheet_74_4a205c0a2588.csv</span>
-<span class="co">#&gt;     └── spreadsheet_74_4a207ad66edd.csv</span></code></pre></div>
+<span class="co">#&gt;     ├── spreadsheet_74_5ce113d8bb6e.csv</span>
+<span class="co">#&gt;     ├── spreadsheet_74_5ce12a89c112.csv</span>
+<span class="co">#&gt;     └── spreadsheet_74_5ce15e6f6737.csv</span></code></pre></div>
 <p>By default, <code>rbackupr</code> does not cache metadata files and folders it stores on Google Drive, but you are strongly encouraged to do so. You can do so with <code><a href="reference/rb_enable_cache.html">rb_enable_cache()</a></code>. By default, metadata will be cached in the current active directory, but if you use <code>rbackupr</code> with different projects, you may not want to leave files with cached metadata scattered around your local drive, but rather keep them in place where they can be accessed. Something like this could typically be included at the beginning of <code>rbackupr</code> backup scripts.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span>
@@ -148,6 +149,40 @@
 <span class="fu"><a href="reference/rb_drive_find_project.html">rb_drive_create_project</a></span><span class="op">(</span>create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># if it already exists, it just returns its dribble</span></code></pre></div>
 <p>At this stage, among all your files and folder on Google Drive, you should expect to find a folder called <code>rbackupr</code> by default (you can customise this in <code><a href="reference/rb_drive_find_project.html">rb_drive_create_project()</a></code>). Within that folder, you will find another folder, <code>rbackupr_testing</code> (the one we set as project). All the files you backup from now on in the current session will be located under this folder.</p>
 <p>Notice that since we are giving only the <code>drive.file</code> scope, i.e. only access to files and folders created with the current app, if you run <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code> you should only see those two folders and nothing else.</p>
+<p>The following steps are based on the basic idea of caching locally key information about online resources stored by Google Drive This is helpful in particular considering the fact that if you have many files, retrieving just a full file list from Google Drive to check what needs to be uploaded can be extremely time-consuming. In the local cache, for simplicity, not all data that are part of a dribble are stored.</p>
+<p>For the base folder, under which all projects are expected to be located, only name and dribble id are stored. Indeed, they have no “parent folder”.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_base_folder.html">rb_drive_find_base_folder</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; # A tibble: 1 × 2</span>
+<span class="co">#&gt;   name     id                               </span>
+<span class="co">#&gt;   &lt;chr&gt;    &lt;drv_id&gt;                         </span>
+<span class="co">#&gt; 1 rbackupr 1DFtFrmrV1_szp3NrbuWkq45FzozFwzOy</span></code></pre></div>
+<p>Even if all projects are expected to be located under a single base folder, local cache for them stores also the id of the base folder as <code>parent_id</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; # A tibble: 1 × 3</span>
+<span class="co">#&gt;   name             id                                parent_id                  </span>
+<span class="co">#&gt;   &lt;chr&gt;            &lt;drv_id&gt;                          &lt;chr&gt;                      </span>
+<span class="co">#&gt; 1 rbackupr_testing 1qDwq0vp7MBRdzDjco6cEg6VVlZZ3G0VH 1DFtFrmrV1_szp3NrbuWkq45Fz…</span></code></pre></div>
+<p>Under the project folder, the real folders and files that are part of the backup are stored.</p>
+<p>We can see the folders included in the base project with:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; # A tibble: 0 × 4</span>
+<span class="co">#&gt; # … with 4 variables: name &lt;chr&gt;, id &lt;drv_id&gt;, parent_id &lt;drv_id&gt;,</span>
+<span class="co">#&gt; #   relative_path &lt;fs::path&gt;</span></code></pre></div>
+<p>Then, for files, more details are stored in cache, including:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="reference/rb_get_files.html">rb_get_files</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; # A tibble: 0 × 11</span>
+<span class="co">#&gt; # … with 11 variables: name &lt;chr&gt;, id &lt;drv_id&gt;, mimeType &lt;chr&gt;,</span>
+<span class="co">#&gt; #   createdTime &lt;chr&gt;, modifiedTime &lt;chr&gt;, originalFilename &lt;chr&gt;,</span>
+<span class="co">#&gt; #   fullFileExtension &lt;chr&gt;, size &lt;chr&gt;, md5Checksum &lt;chr&gt;, parent_id &lt;drv_id&gt;,</span>
+<span class="co">#&gt; #   rbackupr_cache_time &lt;dttm&gt;</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="creating-your-own-app">Creating your own app<a class="anchor" aria-label="anchor" href="#creating-your-own-app"></a>
@@ -163,7 +198,7 @@
 <li>you don’t risk hitting the rate limiting because some other user is busy with the same app</li>
 </ul>
 <p>Ultimately, <code>rbackupr</code> relies on <code>gargle</code> for the authentication, so you can still follow the relevant documentation to set some settings.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># See ?gargle_oauth_cache()</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>
