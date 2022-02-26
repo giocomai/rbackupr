@@ -52,6 +52,11 @@ In order to reduce the impact of some of the issues that come with this
 choice, this app caches locally metadata about remote folders and files
 in order to speed up processing.
 
+An additional benefit of `rbackupr` is that it is agnostic about the
+location of the base folder, as it stores only relative path: it is
+possible to keep a folder up to date from different locations, or move a
+folder and have it updated without issues.
+
 ## Installation
 
 You can install the development version of `rbackupr` from
@@ -97,18 +102,18 @@ purrr::walk(
 
 
 fs::dir_tree(base_temp_folder)
-#> /tmp/Rtmp5iv4Ru/rbackupr_testing
+#> /tmp/RtmpwuEIZx/rbackupr_testing
 #> ├── data_34
-#> │   ├── spreadsheet_34_4a202fa0b4f0.csv
-#> │   └── spreadsheet_34_4a205379d43.csv
+#> │   ├── spreadsheet_34_5ce139b92a2e.csv
+#> │   └── spreadsheet_34_5ce154f88473.csv
 #> ├── data_58
-#> │   ├── spreadsheet_58_4a20120234ac.csv
-#> │   ├── spreadsheet_58_4a201be10a4b.csv
-#> │   └── spreadsheet_58_4a20257977cd.csv
+#> │   ├── spreadsheet_58_5ce126b0f0c8.csv
+#> │   ├── spreadsheet_58_5ce139e68a68.csv
+#> │   └── spreadsheet_58_5ce15667f03c.csv
 #> └── data_74
-#>     ├── spreadsheet_74_4a201d1ace31.csv
-#>     ├── spreadsheet_74_4a205c0a2588.csv
-#>     └── spreadsheet_74_4a207ad66edd.csv
+#>     ├── spreadsheet_74_5ce113d8bb6e.csv
+#>     ├── spreadsheet_74_5ce12a89c112.csv
+#>     └── spreadsheet_74_5ce15e6f6737.csv
 ```
 
 By default, `rbackupr` does not cache metadata files and folders it
@@ -163,6 +168,64 @@ Notice that since we are giving only the `drive.file` scope, i.e. only
 access to files and folders created with the current app, if you run
 `googledrive::drive_ls()` you should only see those two folders and
 nothing else.
+
+The following steps are based on the basic idea of caching locally key
+information about online resources stored by Google Drive This is
+helpful in particular considering the fact that if you have many files,
+retrieving just a full file list from Google Drive to check what needs
+to be uploaded can be extremely time-consuming. In the local cache, for
+simplicity, not all data that are part of a dribble are stored.
+
+For the base folder, under which all projects are expected to be
+located, only name and dribble id are stored. Indeed, they have no
+“parent folder”.
+
+``` r
+rb_drive_find_base_folder()
+#> # A tibble: 1 × 2
+#>   name     id                               
+#>   <chr>    <drv_id>                         
+#> 1 rbackupr 1DFtFrmrV1_szp3NrbuWkq45FzozFwzOy
+```
+
+Even if all projects are expected to be located under a single base
+folder, local cache for them stores also the id of the base folder as
+`parent_id`.
+
+``` r
+rb_get_project()
+#> # A tibble: 1 × 3
+#>   name             id                                parent_id                  
+#>   <chr>            <drv_id>                          <chr>                      
+#> 1 rbackupr_testing 1qDwq0vp7MBRdzDjco6cEg6VVlZZ3G0VH 1DFtFrmrV1_szp3NrbuWkq45Fz…
+```
+
+Under the project folder, the real folders and files that are part of
+the backup are stored.
+
+We can see the folders included in the base project with:
+
+``` r
+rb_get_project() %>% 
+  rb_get_folders()
+#> # A tibble: 0 × 4
+#> # … with 4 variables: name <chr>, id <drv_id>, parent_id <drv_id>,
+#> #   relative_path <fs::path>
+```
+
+Then, for files, more details are stored in cache, including:
+
+``` r
+rb_get_project() %>% 
+  rb_get_folders() %>% 
+  dplyr::slice(1) %>% 
+  rb_get_files()
+#> # A tibble: 0 × 11
+#> # … with 11 variables: name <chr>, id <drv_id>, mimeType <chr>,
+#> #   createdTime <chr>, modifiedTime <chr>, originalFilename <chr>,
+#> #   fullFileExtension <chr>, size <chr>, md5Checksum <chr>, parent_id <drv_id>,
+#> #   rbackupr_cache_time <dttm>
+```
 
 ## Creating your own app
 

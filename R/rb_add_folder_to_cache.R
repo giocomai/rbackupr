@@ -2,6 +2,7 @@
 #'
 #' @param dribble A dribble.
 #' @param parent_id Identifier of the parent folder.
+#' @param relative_path Path relative to base folder.
 #' @param project Defaults to NULL. Can be set once per session with
 #'   `rb_get_project_name()`. If given, must be a character vector of length
 #'   one: name of the project.
@@ -12,6 +13,7 @@
 #' @examples
 rb_add_folder_to_cache <- function(dribble,
                                    parent_id,
+                                   relative_path,
                                    project = NULL) {
   project <- rb_get_project_name(project = project)
 
@@ -29,7 +31,10 @@ rb_add_folder_to_cache <- function(dribble,
 
   new_folder_for_cache_df <- dribble %>%
     dplyr::select(.data$name, .data$id) %>%
-    dplyr::mutate(parent_id = parent_id)
+    dplyr::mutate(
+      parent_id = parent_id,
+      relative_path = relative_path
+    )
 
   if (nrow(new_folder_for_cache_df) > 0) {
     if (db_table_exists_v == FALSE) {

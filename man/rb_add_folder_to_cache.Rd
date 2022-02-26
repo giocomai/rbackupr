@@ -4,12 +4,14 @@
 \alias{rb_add_folder_to_cache}
 \title{Add folder to cache}
 \usage{
-rb_add_folder_to_cache(dribble, parent_id, project = NULL)
+rb_add_folder_to_cache(dribble, parent_id, relative_path, project = NULL)
 }
 \arguments{
 \item{dribble}{A dribble.}
 
 \item{parent_id}{Identifier of the parent folder.}
+
+\item{relative_path}{Path relative to base folder.}
 
 \item{project}{Defaults to NULL. Can be set once per session with
 `rb_get_project_name()`. If given, must be a character vector of length

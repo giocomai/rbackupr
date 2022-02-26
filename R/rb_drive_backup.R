@@ -94,17 +94,95 @@ rb_backup <- function(path,
     first_level_folders <- local_first_level_folders
   }
 
-  folders_df <- rb_drive_create_folders(
-    folders = first_level_folders,
-    parent_id = project_folder_df,
-    project = project,
-    update = update
-  )
 
 
   level <- 0
 
   while (level < max_level) {
+    if (level == 0) {
+      folders_df <- rb_drive_create_folders(
+        folders = first_level_folders,
+        parent_id = project_folder_df,
+        project = project,
+        update = update
+      )
+    } else if (level == 1) {
+      purrr::walk(
+        .x = seq_along(folders_df$name),
+        .f = function(i) {
+          local_folders <- fs::dir_ls()
+        }
+      )
+
+
+
+      current_level_folders_local <- fs::dir_ls(
+        path = fs::path(path, folders_df$name),
+        recurse = FALSE,
+        type = "directory"
+      )
+    } else {
+      current_level_folders_local <- fs::dir_ls(
+        path = fs::path(current_level_folders_local),
+        recurse = FALSE,
+        type = "directory"
+      )
+    }
+
+    purrr::walk(
+      .x = current_level_folders_local,
+      .f = function(x) {
+        local_parent <- fs::path_dir(x)
+
+        rb_get_folders()
+
+        rb_drive_create_folders(
+          folders = fs::path_file(x),
+          parent_id = current_parent_id,
+          project = project,
+          update = update
+        )
+
+
+
+        remote_parent_id <- y
+        remote_parent_dribble <- googledrive::as_dribble(y)
+
+        local_files <- fs::dir_ls(
+          path = local_parent,
+          recurse = FALSE,
+          type = "file",
+          glob = glob
+        )
+
+        remote_files_df <- rb_get_files(dribble_id = remote_parent_id)
+
+        if (nrow(remote_files_df) == 0) {
+          files_to_upload <- local_files
+        } else {
+          files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name) == FALSE]
+        }
+
+        purrr::walk(
+          .x = files_to_upload,
+          .f = function(current_file) {
+            new_upload_dribble <- googledrive::drive_upload(
+              media = current_file,
+              path = remote_parent_dribble
+            )
+
+            rb_add_file_to_cache(
+              dribble = new_upload_dribble,
+              parent_id = remote_parent_id,
+              project = project
+            )
+          }
+        )
+      }
+    )
+
+
+    ################# to remove ###########
     purrr::walk2(
       .x = folders_df$name,
       .y = folders_df$id,
@@ -126,7 +204,7 @@ rb_backup <- function(path,
           if (nrow(remote_files_df) == 0) {
             files_to_upload <- local_files
           } else {
-            files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name)==FALSE]
+            files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name) == FALSE]
           }
 
           purrr::walk(
@@ -136,18 +214,26 @@ rb_backup <- function(path,
                 media = current_file,
                 path = remote_parent_dribble
               )
-              
-              rb_add_file_to_cache(dribble = new_upload_dribble,
-                                   parent_id = remote_parent_id,
-                                   project = project)
-              
+
+              rb_add_file_to_cache(
+                dribble = new_upload_dribble,
+                parent_id = remote_parent_id,
+                project = project
+              )
             }
           )
+        } else {
+          # when level more than 0
         }
       }
     )
+
+    ################# end of to remove ###########
+
     level <- level + 1
   }
+
+
   ### now check folders one by one, recursively
 
 

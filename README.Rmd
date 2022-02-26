@@ -42,6 +42,7 @@ See screenshot of Google authentication prompt, where it is clear that you give 
 
 In order to reduce the impact of some of the issues that come with this choice, this app caches locally metadata about remote folders and files in order to speed up processing. 
 
+An additional benefit of `rbackupr` is that it is agnostic about the location of the base folder, as it stores only relative path: it is possible to keep a folder up to date from different locations, or move a folder and have it updated without issues.
 
 
 ## Installation
@@ -121,6 +122,38 @@ rb_drive_create_project(create = TRUE) # if it already exists, it just returns i
 At this stage, among all your files and folder on Google Drive, you should expect to find a folder called `rbackupr` by default (you can customise this in `rb_drive_create_project()`). Within that folder, you will find another folder, `rbackupr_testing` (the one we set as project). All the files you backup from now on in the current session will be located under this folder. 
 
 Notice that since we are giving only the `drive.file` scope, i.e. only access to files and folders created with the current app, if you run `googledrive::drive_ls()` you should only see those two folders and nothing else. 
+
+The following steps are based on the basic idea of caching locally key information about online resources stored by Google Drive This is helpful in particular considering the fact that if you have many files, retrieving just a full file list from Google Drive to check what needs to be uploaded can be extremely time-consuming. In the local cache, for simplicity, not all data that are part of a dribble are stored.
+
+For the base folder, under which all projects are expected to be located, only name and dribble id are stored. Indeed, they have no "parent folder".
+
+```{r}
+rb_drive_find_base_folder()
+```
+Even if all projects are expected to be located under a single base folder, local cache for them stores also the id of the base folder as `parent_id`.
+
+
+```{r}
+rb_get_project()
+```
+
+Under the project folder, the real folders and files that are part of the backup are stored.
+
+We can see the folders included in the base project with:
+
+```{r}
+rb_get_project() %>% 
+  rb_get_folders()
+```
+
+Then, for files, more details are stored in cache, including:
+
+```{r}
+rb_get_project() %>% 
+  rb_get_folders() %>% 
+  dplyr::slice(1) %>% 
+  rb_get_files()
+```
 
 
 
