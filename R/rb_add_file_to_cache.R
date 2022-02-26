@@ -41,7 +41,7 @@ rb_add_file_to_cache <- function(dribble,
     ) %>%
     dplyr::select(-.data$drive_resource) %>%
     dplyr::mutate(
-      parent_id = googledrive:::as_id.character(dribble_id),
+      parent_id = googledrive:::as_id.character(parent_id),
       rbackupr_cache_time = Sys.time()
     )
 

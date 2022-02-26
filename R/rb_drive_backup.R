@@ -111,7 +111,7 @@ rb_backup <- function(path,
       .f = function(x, y) {
         if (level == 0) {
           local_parent <- fs::path(path, x)
-          remote_parent <- y
+          remote_parent_id <- y
           remote_parent_dribble <- googledrive::as_dribble(y)
 
           local_files <- fs::dir_ls(
@@ -121,12 +121,12 @@ rb_backup <- function(path,
             glob = glob
           )
 
-          remote_files_df <- rb_get_files(dribble_id = remote_parent)
+          remote_files_df <- rb_get_files(dribble_id = remote_parent_id)
 
           if (nrow(remote_files_df) == 0) {
             files_to_upload <- local_files
           } else {
-            files_to_upload <- local_files[fs::path_file(local_files) %in% remote_files$name]
+            files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name)==FALSE]
           }
 
           purrr::walk(
@@ -136,13 +136,16 @@ rb_backup <- function(path,
                 media = current_file,
                 path = remote_parent_dribble
               )
+              
+              rb_add_file_to_cache(dribble = new_upload_dribble,
+                                   parent_id = remote_parent_id,
+                                   project = project)
+              
             }
           )
         }
       }
     )
-
-
     level <- level + 1
   }
   ### now check folders one by one, recursively
