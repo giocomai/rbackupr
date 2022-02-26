@@ -9,6 +9,9 @@
 #' @param first_level_files Logical, defaults to TRUE. If FALSE, first level
 #'   files (files that are directly under the project folder, rather than a
 #'   subfolder) are not included in the backup.
+#' @param max_level Defaults to 100. Maximum level of sub-folders to backup.
+#'   Default means it will go 100 times deep into sub-folders. Used also to
+#'   prevent infinite loops.
 #' @param glob Defaults to NULL. Can be used to filter type of files to upload,
 #'   e.g. "*.jpg"
 #' @param recurse Defaults to TRUE. Recurse up to one level.
@@ -33,14 +36,19 @@ rb_backup <- function(path,
                       project = NULL,
                       first_level_folders = NULL,
                       first_level_files = TRUE,
-                      glob = NULL,
+                      max_level = 100,
                       recurse = TRUE,
+                      glob = NULL,
                       create = TRUE,
                       update = FALSE,
                       cache = TRUE,
                       base_folder = "rbackupr") {
   
   project <- rb_get_project_name(project = project)
+  
+  if (recurse = FALSE) {
+    max_level <- 1
+  }
 
   project_folder_df <- rb_get_project(
     project = project,
@@ -85,13 +93,18 @@ rb_backup <- function(path,
     }
 
   } else {
-    first_level_folders <- first_level_folders
+    first_level_folders <- local_first_level_folders
   }
   
   folders_df <- rb_drive_create_folders(folders = first_level_folders, 
                                         parent_id = project_folder_df,
-                                        project = project, 
+                                        project = project,
                                         update = update)
+  
+  
+  
+  ### now check folders one by one, recursively
+  
   
   
   ###################

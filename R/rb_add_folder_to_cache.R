@@ -32,7 +32,7 @@ rb_add_folder_to_cache <- function(dribble,
     dplyr::select(.data$name, .data$id) %>%
     dplyr::mutate(parent_id = parent_id)
   
-  if (nrow(new_folders_df) > 0) {
+  if (nrow(new_folder_for_cache_df) > 0) {
     if (db_table_exists_v == FALSE) {
       RSQLite::dbWriteTable(
         conn = db_connection,
