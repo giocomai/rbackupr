@@ -28,6 +28,9 @@
     <loc>https://giocomai.github.io/rbackupr/reference/pipe.html</loc>
   </url>
   <url>
+    <loc>https://giocomai.github.io/rbackupr/reference/rb_add_folder_to_cache.html</loc>
+  </url>
+  <url>
     <loc>https://giocomai.github.io/rbackupr/reference/rb_backup.html</loc>
   </url>
   <url>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>https://giocomai.github.io/rbackupr/reference/rb_drive_auth.html</loc>
+  </url>
+  <url>
+    <loc>https://giocomai.github.io/rbackupr/reference/rb_drive_create_folders.html</loc>
   </url>
   <url>
     <loc>https://giocomai.github.io/rbackupr/reference/rb_drive_find_base_folder.html</loc>

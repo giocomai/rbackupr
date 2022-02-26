@@ -52,9 +52,11 @@
   <span class="va">path</span>,
   project <span class="op">=</span> <span class="cn">NULL</span>,
   first_level_folders <span class="op">=</span> <span class="cn">NULL</span>,
+  first_level_files <span class="op">=</span> <span class="cn">TRUE</span>,
   glob <span class="op">=</span> <span class="cn">NULL</span>,
   recurse <span class="op">=</span> <span class="cn">TRUE</span>,
   create <span class="op">=</span> <span class="cn">TRUE</span>,
+  update <span class="op">=</span> <span class="cn">FALSE</span>,
   cache <span class="op">=</span> <span class="cn">TRUE</span>,
   base_folder <span class="op">=</span> <span class="st">"rbackupr"</span>
 <span class="op">)</span></code></pre></div>
@@ -66,11 +68,15 @@
 <dd><p>Local path where files to backup are stored.</p></dd>
 <dt>project</dt>
 <dd><p>Defaults to NULL. Can be set once per session with
-`rb_get_project_name()`. If given, must be a character vector of length one:
-name of the project.</p></dd>
+`rb_get_project_name()`. If given, must be a character vector of length
+one: name of the project.</p></dd>
 <dt>first_level_folders</dt>
 <dd><p>Defaults to NULL. If given, clarifies which
 folders within the path should be uploaded, keeping the folder structure.</p></dd>
+<dt>first_level_files</dt>
+<dd><p>Logical, defaults to TRUE. If FALSE, first level
+files (files that are directly under the project folder, rather than a
+subfolder) are not included in the backup.</p></dd>
 <dt>glob</dt>
 <dd><p>Defaults to NULL. Can be used to filter type of files to upload,
 e.g. "*.jpg"</p></dd>
@@ -78,6 +84,10 @@ e.g. "*.jpg"</p></dd>
 <dd><p>Defaults to TRUE. Recurse up to one level.</p></dd>
 <dt>create</dt>
 <dd><p>Logical, defaults to TRUE. Create folders if missing.</p></dd>
+<dt>update</dt>
+<dd><p>Logical, defaults to FALSE. If TRUE, checks on Google Drive for
+newly updated files or folders, otherwise it assumes that only files and
+folders listed in cache exist online.</p></dd>
 <dt>cache</dt>
 <dd><p>Logical, defaults to TRUE. Stores locally cached information
 about base and project folder.</p></dd>
