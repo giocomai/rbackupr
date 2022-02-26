@@ -74,7 +74,7 @@ rb_get_cache_folder <- rb_set_cache_folder
 #' @return Nothing, used for its side effects.
 #' @export
 #' @examples
-#'   rb_enable_cache()
+#' rb_enable_cache()
 rb_enable_cache <- function() {
   Sys.setenv(rbackupr_cache = TRUE)
 }
@@ -174,15 +174,15 @@ rb_set_project <- function(project = NULL) {
 
 #' @rdname rb_set_project
 #' @examples
-#' rb_get_project()
+#' rb_get_project_name()
 #' @export
-rb_get_project <- rb_set_project
+rb_get_project_name <- rb_set_project
 
 
 
 #' Gets location of cache file
 #'
-#' @param filename Defaults to "rbackupr_cache.sqlite". 
+#' @param filename Defaults to "rbackupr_cache.sqlite".
 #' @param cache_folder Defaults to folder set with `rb_set_cache_folder()`
 #'
 #' @return A character vector of length one with location of item cache file.
@@ -195,8 +195,10 @@ rb_get_project <- rb_set_project
 #' sqlite_cache_file_location
 rb_get_cache_file <- function(filename = "rbackupr_cache.sqlite",
                               cache_folder = rbackupr::rb_get_cache_folder()) {
-  fs::path(cache_folder, 
-           filename)
+  fs::path(
+    cache_folder,
+    filename
+  )
 }
 
 #' Gets name of table inside the database
@@ -205,7 +207,7 @@ rb_get_cache_file <- function(filename = "rbackupr_cache.sqlite",
 #'   typically used by `rbackupr` include "base_folder", "projects", and
 #'   "project".
 #' @param project Defaults to project name set with
-#'   `rbackupr::rb_get_project()`. Ignored if the parameter type is not set to
+#'   `rbackupr::rb_get_project_name()`. Ignored if the parameter type is not set to
 #'   "project"
 #'
 #' @return A character vector of length one with the name of the relevant table
@@ -216,9 +218,9 @@ rb_get_cache_file <- function(filename = "rbackupr_cache.sqlite",
 #' # outputs name of table used in the cache database
 #' rb_get_cache_table_name(type = "project", language = "testing_project")
 rb_get_cache_table_name <- function(type = "project",
-                                    project = rbackupr::rb_get_project()) {
+                                    project = rbackupr::rb_get_project_name()) {
   if (type == "project") {
-    stringr::str_c("rbackupr_", type, "_", project) 
+    stringr::str_c("rbackupr_", type, "_", project)
   } else {
     stringr::str_c("rbackupr_", type)
   }

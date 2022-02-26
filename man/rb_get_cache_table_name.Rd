@@ -4,7 +4,10 @@
 \alias{rb_get_cache_table_name}
 \title{Gets name of table inside the database}
 \usage{
-rb_get_cache_table_name(type = "project", project = rbackupr::rb_get_project())
+rb_get_cache_table_name(
+  type = "project",
+  project = rbackupr::rb_get_project_name()
+)
 }
 \arguments{
 \item{type}{Defaults to "project". Type of cache file to output. Values
@@ -12,7 +15,7 @@ typically used by `rbackupr` include "base_folder", "projects", and
 "project".}
 
 \item{project}{Defaults to project name set with
-`rbackupr::rb_get_project()`. Ignored if the parameter type is not set to
+`rbackupr::rb_get_project_name()`. Ignored if the parameter type is not set to
 "project"}
 }
 \value{

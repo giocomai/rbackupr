@@ -3,7 +3,7 @@
 #' @param dribble_id The dribble identifier of a folder on Google Drive.
 #' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.
 #' @param project Defaults to NULL. Can be set once per session with
-#'   `rb_get_project()`. If given, must be a character vector of length one:
+#'   `rb_get_project_name()`. If given, must be a character vector of length one:
 #'   name of the project.
 #' @param cache Logical, defaults to TRUE. Stores locally cached information
 #'   about base and project folder.
@@ -15,12 +15,12 @@
 #' @examples
 #'
 #' if (interactive()) {
-#'   rb_get_folder_cache(rb_drive_find_project())
+#'   rb_get_folders(rb_drive_find_project())
 #' }
-rb_get_folder_cache <- function(dribble_id,
-                                update = FALSE,
-                                project = NULL,
-                                cache = TRUE) {
+rb_get_folders <- function(dribble_id,
+                           update = FALSE,
+                           project = NULL,
+                           cache = TRUE) {
   if (cache == FALSE) {
     return(NULL)
   }
@@ -32,7 +32,7 @@ rb_get_folder_cache <- function(dribble_id,
     }
   }
 
-  project <- rb_get_project(project = project)
+  project <- rb_get_project_name(project = project)
 
   table_name <- rb_get_cache_table_name(type = stringr::str_c("folders_", project))
 
@@ -112,7 +112,7 @@ rb_get_folder_cache <- function(dribble_id,
 #' @param dribble_id The dribble identifier of a folder on Google Drive.
 #' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.
 #' @param project Defaults to NULL. Can be set once per session with
-#'   `rb_get_project()`. If given, must be a character vector of length one:
+#'   `rb_get_project_name()`. If given, must be a character vector of length one:
 #'   name of the project.
 #' @param cache Logical, defaults to TRUE. Stores locally cached information
 #'   about base and project folder.
@@ -124,17 +124,24 @@ rb_get_folder_cache <- function(dribble_id,
 #' @examples
 #'
 #' if (interactive()) {
-#'   rb_get_file_cache(rb_drive_find_project())
+#'   rb_get_files(rb_drive_find_project())
 #' }
-rb_get_file_cache <- function(dribble_id,
-                              update = FALSE,
-                              project = NULL,
-                              cache = TRUE) {
+rb_get_files <- function(dribble_id,
+                         update = FALSE,
+                         project = NULL,
+                         cache = TRUE) {
   if (cache == FALSE) {
     return(NULL)
   }
 
-  project <- rb_get_project(project = project)
+  if (is.data.frame(dribble_id) == TRUE) {
+    if ("id" %in% colnames(dribble_id)) {
+      dribble_id <- dribble_id %>%
+        dplyr::pull(.data$id)
+    }
+  }
+
+  project <- rb_get_project_name(project = project)
 
   table_name <- rb_get_cache_table_name(type = stringr::str_c(
     "files_",
@@ -178,8 +185,18 @@ rb_get_file_cache <- function(dribble_id,
     path = googledrive::as_id(dribble_id),
     recursive = FALSE
   ) %>%
-    tidyr::unnest(drive_resource) %>%
-    dplyr::select(.data$name, .data$id) %>%
+    dplyr::mutate(mimeType = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "mimeType"))) %>%
+    dplyr::filter(.data$mimeType != "application/vnd.google-apps.folder") %>%
+    dplyr::mutate(
+      mimeType = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "mimeType")),
+      createdTime = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "createdTime")),
+      modifiedTime = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "modifiedTime")),
+      originalFilename = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "originalFilename")),
+      fullFileExtension = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "fullFileExtension")),
+      size = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "size")),
+      md5Checksum = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "md5Checksum"))
+    ) %>%
+    dplyr::select(-.data$drive_resource) %>%
     dplyr::mutate(parent_id = googledrive:::as_id.character(dribble_id))
 
   new_files_df <- current_files_df %>%

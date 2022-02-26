@@ -13,5 +13,5 @@ Nothing, used for its side effects.
 Enable caching for the current session
 }
 \examples{
-  rb_enable_cache()
+rb_enable_cache()
 }

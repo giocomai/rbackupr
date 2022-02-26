@@ -22,11 +22,11 @@ Set up app and scope for the current session
 }
 \examples{
 if (interactive()) {
-google_app <- httr::oauth_app(
-"my-very-own-google-app",
-key = "123456789.apps.googleusercontent.com",
-secret = "abcdefghijklmnopqrstuvwxyz"
-)
-rb_drive_auth(app = google_app)
+  google_app <- httr::oauth_app(
+    "my-very-own-google-app",
+    key = "123456789.apps.googleusercontent.com",
+    secret = "abcdefghijklmnopqrstuvwxyz"
+  )
+  rb_drive_auth(app = google_app)
 }
 }

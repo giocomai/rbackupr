@@ -19,7 +19,7 @@ rb_backup(
 \item{path}{Local path where files to backup are stored.}
 
 \item{project}{Defaults to NULL. Can be set once per session with
-`rb_get_project()`. If given, must be a character vector of length one:
+`rb_get_project_name()`. If given, must be a character vector of length one:
 name of the project.}
 
 \item{first_level_folders}{Defaults to NULL. If given, clarifies which

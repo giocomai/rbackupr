@@ -1,6 +1,6 @@
 #' Create rbackupr project
 #'
-#' @param project Defaults to NULL. Can be set once per session with `rb_get_project()`. If given, must be a character vector of length one: name of the project.
+#' @param project Defaults to NULL. Can be set once per session with `rb_get_project_name()`. If given, must be a character vector of length one: name of the project.
 #' @param create Logical, defaults to TRUE. Creates folder if not existing.
 #'
 #' @return A dribble corresponding to the project folder.
@@ -10,15 +10,15 @@
 #' \dontrun{
 #' if (interactive()) {
 #'   rb_drive_find_project(project = "example")
-#'  }
+#' }
 #' }
 #'
 rb_drive_find_project <- function(project = NULL,
                                   base_folder = "rbackupr",
                                   create = TRUE,
                                   cache = NULL) {
-  project <- rb_get_project(project = project)
-  
+  project <- rb_get_project_name(project = project)
+
   if (rb_check_cache(cache = cache)) {
     db_connection <- RSQLite::dbConnect(
       drv = RSQLite::SQLite(),
@@ -33,29 +33,31 @@ rb_drive_find_project <- function(project = NULL,
         conn = db_connection,
         name = rb_get_cache_table_name(type = "projects")
       ) %>%
-        dplyr::filter(name == project) %>% 
+        dplyr::filter(name == project) %>%
         dplyr::collect() %>%
         tibble::as_tibble() %>%
         dplyr::mutate(id = googledrive:::as_id.character(x = .data$id))
-      
+
       if (nrow(project_folder_df) > 0) {
         RSQLite::dbDisconnect(conn = db_connection)
         return(project_folder_df)
       }
     }
   }
-  
+
   base_folder_dribble_id <- rb_drive_find_base_folder(
     base_folder = base_folder,
     cache = cache
-  ) %>% 
-    dplyr::pull(id) 
-  
-  project_dribble <- googledrive::drive_ls(path = googledrive::as_id(base_folder_dribble_id),
-                                           recursive = FALSE,
-                                           type = "folder") %>% 
+  ) %>%
+    dplyr::pull(id)
+
+  project_dribble <- googledrive::drive_ls(
+    path = googledrive::as_id(base_folder_dribble_id),
+    recursive = FALSE,
+    type = "folder"
+  ) %>%
     dplyr::filter(name == project)
-  
+
   if (nrow(project_dribble) == 1) {
     # do nothing, good to go
   } else if (nrow(project_dribble) == 0) {
@@ -70,11 +72,12 @@ rb_drive_find_project <- function(project = NULL,
   } else if (nrow(project_dribble) > 1) {
     stop("Something went wrong: you have more than one folder corresponding with the project name in the base folder. This needs to be fixed manually.")
   }
-  
+
   project_df <- project_dribble %>%
-    dplyr::select(.data$name, .data$id)
-  
-  
+    dplyr::select(.data$name, .data$id) %>%
+    dplyr::mutate(parent_id = base_folder_dribble_id)
+
+
   if (rb_check_cache(cache = cache)) {
     if (db_table_exists_v == FALSE) {
       RSQLite::dbWriteTable(
@@ -92,7 +95,10 @@ rb_drive_find_project <- function(project = NULL,
     RSQLite::dbDisconnect(conn = db_connection)
   }
   project_df %>%
-    dplyr::mutate(id = googledrive:::as_id.character(x = .data$id))
+    dplyr::mutate(
+      id = googledrive:::as_id.character(x = .data$id),
+      parent_id = googledrive:::as_id.character(x = .data$parent_id)
+    )
 }
 
 
@@ -100,6 +106,11 @@ rb_drive_find_project <- function(project = NULL,
 #' @examples rb_drive_create_project(project = "example")
 #' @export
 rb_drive_create_project <- rb_drive_find_project
+
+#' @rdname rb_drive_find_project
+#' @examples rb_get_project(project = "example")
+#' @export
+rb_get_project <- rb_drive_find_project
 
 #' Create or get base folder
 #'
@@ -133,7 +144,7 @@ rb_drive_find_base_folder <- function(base_folder = "rbackupr",
         conn = db_connection,
         name = rb_get_cache_table_name(type = "base_folder")
       ) %>%
-        dplyr::filter(name==base_folder) %>% 
+        dplyr::filter(name == base_folder) %>%
         dplyr::collect() %>%
         tibble::as_tibble() %>%
         dplyr::mutate(id = googledrive:::as_id.character(x = .data$id))

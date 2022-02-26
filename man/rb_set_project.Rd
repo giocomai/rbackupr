@@ -2,12 +2,12 @@
 % Please edit documentation in R/rb_caching.R
 \name{rb_set_project}
 \alias{rb_set_project}
-\alias{rb_get_project}
+\alias{rb_get_project_name}
 \title{Set (or get) name of project for the current session.}
 \usage{
 rb_set_project(project = NULL)
 
-rb_get_project(project = NULL)
+rb_get_project_name(project = NULL)
 }
 \arguments{
 \item{project}{Defaults to NULL. If given, it must be a character vector of
@@ -23,5 +23,5 @@ Set (or get) name of project for the current session.
 }
 \examples{
 rb_set_project(project = "weather_csv_files")
-rb_get_project()
+rb_get_project_name()
 }

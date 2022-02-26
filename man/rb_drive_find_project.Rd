@@ -3,6 +3,7 @@
 \name{rb_drive_find_project}
 \alias{rb_drive_find_project}
 \alias{rb_drive_create_project}
+\alias{rb_get_project}
 \title{Create rbackupr project}
 \usage{
 rb_drive_find_project(
@@ -18,9 +19,16 @@ rb_drive_create_project(
   create = TRUE,
   cache = NULL
 )
+
+rb_get_project(
+  project = NULL,
+  base_folder = "rbackupr",
+  create = TRUE,
+  cache = NULL
+)
 }
 \arguments{
-\item{project}{Defaults to NULL. Can be set once per session with `rb_get_project()`. If given, must be a character vector of length one: name of the project.}
+\item{project}{Defaults to NULL. Can be set once per session with `rb_get_project_name()`. If given, must be a character vector of length one: name of the project.}
 
 \item{create}{Logical, defaults to TRUE. Creates folder if not existing.}
 }
@@ -34,8 +42,9 @@ Create rbackupr project
 \dontrun{
 if (interactive()) {
   rb_drive_find_project(project = "example")
- }
+}
 }
 
 rb_drive_create_project(project = "example")
+rb_get_project(project = "example")
 }
