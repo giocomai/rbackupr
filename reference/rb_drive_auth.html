@@ -69,12 +69,12 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">google_app</span> <span class="op">&lt;-</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html" class="external-link">oauth_app</a></span><span class="op">(</span></span>
-<span class="r-in"><span class="st">"my-very-own-google-app"</span>,</span>
-<span class="r-in">key <span class="op">=</span> <span class="st">"123456789.apps.googleusercontent.com"</span>,</span>
-<span class="r-in">secret <span class="op">=</span> <span class="st">"abcdefghijklmnopqrstuvwxyz"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu">rb_drive_auth</span><span class="op">(</span>app <span class="op">=</span> <span class="va">google_app</span><span class="op">)</span></span>
+<span class="r-in">  <span class="va">google_app</span> <span class="op">&lt;-</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html" class="external-link">oauth_app</a></span><span class="op">(</span></span>
+<span class="r-in">    <span class="st">"my-very-own-google-app"</span>,</span>
+<span class="r-in">    key <span class="op">=</span> <span class="st">"123456789.apps.googleusercontent.com"</span>,</span>
+<span class="r-in">    secret <span class="op">=</span> <span class="st">"abcdefghijklmnopqrstuvwxyz"</span></span>
+<span class="r-in">  <span class="op">)</span></span>
+<span class="r-in">  <span class="fu">rb_drive_auth</span><span class="op">(</span>app <span class="op">=</span> <span class="va">google_app</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
