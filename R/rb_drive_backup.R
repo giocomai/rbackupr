@@ -46,7 +46,7 @@ rb_backup <- function(path,
   
   project <- rb_get_project_name(project = project)
   
-  if (recurse = FALSE) {
+  if (recurse == FALSE) {
     max_level <- 1
   }
 
