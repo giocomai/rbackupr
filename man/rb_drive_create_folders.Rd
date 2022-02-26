@@ -28,9 +28,9 @@ Create missing folders and get data frame with identifiers of all given folders
 \examples{
 
 if (interactive()) {
-
-rb_drive_create_folders(folders = c("folder_a", "folder_b"),
-                        parent_id = rb_get_project())
+  rb_drive_create_folders(
+    folders = c("folder_a", "folder_b"),
+    parent_id = rb_get_project()
+  )
 }
-
 }

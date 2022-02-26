@@ -13,37 +13,36 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' if (interactive()) {
-#' 
-#' rb_drive_create_folders(folders = c("folder_a", "folder_b"),
-#'                         parent_id = rb_get_project())
+#'   rb_drive_create_folders(
+#'     folders = c("folder_a", "folder_b"),
+#'     parent_id = rb_get_project()
+#'   )
 #' }
-#' 
 rb_drive_create_folders <- function(folders,
                                     parent_id,
-                                    project = NULL, 
+                                    project = NULL,
                                     update = FALSE) {
-  
   if (is.data.frame(parent_id) == TRUE) {
     if ("id" %in% colnames(parent_id)) {
       parent_id <- parent_id %>%
         dplyr::pull(.data$id)
     }
   }
-  
-  
+
+
   folders_on_drive <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
     update = update,
     cache = cache
   )
-  
-  new_folder_names <- folders[(folders %in% folders_on_drive$name)==FALSE]
-  
+
+  new_folder_names <- folders[(folders %in% folders_on_drive$name) == FALSE]
+
   # create folders if they do not exist
-  
+
   new_folders_df <- purrr::map_dfr(
     .x = new_folder_names,
     .f = function(x) {
@@ -53,22 +52,24 @@ rb_drive_create_folders <- function(folders,
       ) %>%
         dplyr::select(.data$name, .data$id) %>%
         dplyr::mutate(parent_id = googledrive:::as_id.character(parent_id))
-      
-      new_folder_for_cache_df <- rb_add_folder_to_cache(dribble = new_folder_dribble,
-                                                        parent_id = parent_id)
-      
+
+      new_folder_for_cache_df <- rb_add_folder_to_cache(
+        dribble = new_folder_dribble,
+        parent_id = parent_id
+      )
+
       new_folder_for_cache_df
     }
   )
-  
+
   folders_on_drive_df <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
     update = FALSE,
     cache = cache
   )
-  
-  
-  folders_on_drive_df %>% 
-    dplyr::filter(.data$name  %in% folders)
+
+
+  folders_on_drive_df %>%
+    dplyr::filter(.data$name %in% folders)
 }

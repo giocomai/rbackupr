@@ -15,7 +15,9 @@
 #' @param glob Defaults to NULL. Can be used to filter type of files to upload,
 #'   e.g. "*.jpg"
 #' @param recurse Defaults to TRUE. Recurse up to one level.
-#' @param create Logical, defaults to TRUE. Create folders if missing.
+#' @param create Logical, defaults to TRUE. Create folders if missing. Set to
+#'   FALSE if you are sure there are no new folders to raise an error if
+#'   something unexpected happens.
 #' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for
 #'   newly updated files or folders, otherwise it assumes that only files and
 #'   folders listed in cache exist online.
@@ -25,7 +27,7 @@
 #'
 #' @return
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -43,9 +45,8 @@ rb_backup <- function(path,
                       update = FALSE,
                       cache = TRUE,
                       base_folder = "rbackupr") {
-  
   project <- rb_get_project_name(project = project)
-  
+
   if (recurse == FALSE) {
     max_level <- 1
   }
@@ -58,20 +59,18 @@ rb_backup <- function(path,
   )
 
   # check local files in top level folder
-  
-  if (first_level_files==TRUE) {
-    
-    local_files_top <- fs::dir_ls(path = path, recurse = FALSE, type = "file", glob = glob) %>% 
+
+  if (first_level_files == TRUE) {
+    local_files_top <- fs::dir_ls(path = path, recurse = FALSE, type = "file", glob = glob) %>%
       fs::path_file()
-    
-    if (length(local_files_top)>0) {
+
+    if (length(local_files_top) > 0) {
       previous_first_level_files <- rb_get_files(project_folder_df)
-      
+
       warning("Missing functionality: Top level files bakcup not yet implemented")
       # TODO actually introduce upload
-      
     } else {
-     # do nothing: if there are not files, just move ahead 
+      # do nothing: if there are not files, just move ahead
     }
   }
 
@@ -82,33 +81,76 @@ rb_backup <- function(path,
     type = "directory"
   ) %>%
     fs::path_file()
-  
-  if (is.null(first_level_folders)==FALSE) {
-    # first, check if given first_level_folders exist locally
-    
-    if (Reduce(`|`, first_level_folders %in% local_first_level_folders)==FALSE) {
-      missing_local <- first_level_folders[first_level_folders %in% local_first_level_folders==FALSE]
-      first_level_folders <- first_level_folders[first_level_folders %in% local_first_level_folders==TRUE]
-      warning(stringr::str_c("The following folders do not exist locally: ",stringr::str_c(missing_local, collapse = ";")))
-    }
 
+  if (is.null(first_level_folders) == FALSE) {
+    # first, check if given first_level_folders exist locally
+
+    if (Reduce(`|`, first_level_folders %in% local_first_level_folders) == FALSE) {
+      missing_local <- first_level_folders[first_level_folders %in% local_first_level_folders == FALSE]
+      first_level_folders <- first_level_folders[first_level_folders %in% local_first_level_folders == TRUE]
+      warning(stringr::str_c("The following folders do not exist locally: ", stringr::str_c(missing_local, collapse = ";")))
+    }
   } else {
     first_level_folders <- local_first_level_folders
   }
-  
-  folders_df <- rb_drive_create_folders(folders = first_level_folders, 
-                                        parent_id = project_folder_df,
-                                        project = project,
-                                        update = update)
-  
-  
-  
+
+  folders_df <- rb_drive_create_folders(
+    folders = first_level_folders,
+    parent_id = project_folder_df,
+    project = project,
+    update = update
+  )
+
+
+  level <- 0
+
+  while (level < max_level) {
+    purrr::walk2(
+      .x = folders_df$name,
+      .y = folders_df$id,
+      .f = function(x, y) {
+        if (level == 0) {
+          local_parent <- fs::path(path, x)
+          remote_parent <- y
+          remote_parent_dribble <- googledrive::as_dribble(y)
+
+          local_files <- fs::dir_ls(
+            path = local_parent,
+            recurse = FALSE,
+            type = "file",
+            glob = glob
+          )
+
+          remote_files_df <- rb_get_files(dribble_id = remote_parent)
+
+          if (nrow(remote_files_df) == 0) {
+            files_to_upload <- local_files
+          } else {
+            files_to_upload <- local_files[fs::path_file(local_files) %in% remote_files$name]
+          }
+
+          purrr::walk(
+            .x = files_to_upload,
+            .f = function(current_file) {
+              new_upload_dribble <- googledrive::drive_upload(
+                media = current_file,
+                path = remote_parent_dribble
+              )
+            }
+          )
+        }
+      }
+    )
+
+
+    level <- level + 1
+  }
   ### now check folders one by one, recursively
-  
-  
-  
+
+
+
   ###################
- 
+
   ###################
 
   purrr::walk(

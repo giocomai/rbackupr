@@ -5,7 +5,13 @@
 \title{Gets cached folder with given parent, or update them from Google Drive upon
 request}
 \usage{
-rb_get_folders(dribble_id, update = FALSE, project = NULL, cache = TRUE)
+rb_get_folders(
+  dribble_id,
+  update = FALSE,
+  project = NULL,
+  base_folder = "rbackupr",
+  cache = TRUE
+)
 }
 \arguments{
 \item{dribble_id}{The dribble identifier of a folder on Google Drive.}

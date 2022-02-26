@@ -22,6 +22,7 @@
 rb_get_folders <- function(dribble_id,
                            update = FALSE,
                            project = NULL,
+                           base_folder = "rbackupr",
                            cache = TRUE) {
   if (cache == FALSE) {
     return(NULL)
@@ -112,7 +113,6 @@ rb_get_folders <- function(dribble_id,
 #' Check if new files appeared inside an online folder
 #'
 #' @param dribble_id The dribble identifier of a folder on Google Drive.
-#' @param parent_id Defaults to NULL. If not given, defaults to project top folder. If given, must correpond to id of a folder.
 #' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.
 #' @param project Defaults to NULL. Can be set once per session with
 #'   `rb_get_project_name()`. If given, must be a character vector of length one:
@@ -130,7 +130,6 @@ rb_get_folders <- function(dribble_id,
 #'   rb_get_files(rb_drive_find_project())
 #' }
 rb_get_files <- function(dribble_id,
-                         parent_id = NULL,
                          update = FALSE,
                          project = NULL,
                          cache = TRUE) {
@@ -184,6 +183,7 @@ rb_get_files <- function(dribble_id,
       size = as.character(NA),
       md5Checksum = as.character(NA),
       parent_id = googledrive:::as_id.character(dribble_id),
+      rbackupr_cache_time = as.POSIXct(NA)
     ) %>%
       dplyr::slice(0)
   }
@@ -208,7 +208,10 @@ rb_get_files <- function(dribble_id,
       md5Checksum = purrr::map_chr(.data$drive_resource, function(x) purrr::pluck(x, "md5Checksum"))
     ) %>%
     dplyr::select(-.data$drive_resource) %>%
-    dplyr::mutate(parent_id = googledrive:::as_id.character(dribble_id))
+    dplyr::mutate(
+      parent_id = googledrive:::as_id.character(dribble_id),
+      rbackupr_cache_time = Sys.time()
+    )
 
   new_files_df <- current_files_df %>%
     dplyr::anti_join(

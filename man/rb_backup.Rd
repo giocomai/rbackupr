@@ -9,8 +9,9 @@ rb_backup(
   project = NULL,
   first_level_folders = NULL,
   first_level_files = TRUE,
-  glob = NULL,
+  max_level = 100,
   recurse = TRUE,
+  glob = NULL,
   create = TRUE,
   update = FALSE,
   cache = TRUE,
@@ -31,12 +32,18 @@ folders within the path should be uploaded, keeping the folder structure.}
 files (files that are directly under the project folder, rather than a
 subfolder) are not included in the backup.}
 
-\item{glob}{Defaults to NULL. Can be used to filter type of files to upload,
-e.g. "*.jpg"}
+\item{max_level}{Defaults to 100. Maximum level of sub-folders to backup.
+Default means it will go 100 times deep into sub-folders. Used also to
+prevent infinite loops.}
 
 \item{recurse}{Defaults to TRUE. Recurse up to one level.}
 
-\item{create}{Logical, defaults to TRUE. Create folders if missing.}
+\item{glob}{Defaults to NULL. Can be used to filter type of files to upload,
+e.g. "*.jpg"}
+
+\item{create}{Logical, defaults to TRUE. Create folders if missing. Set to
+FALSE if you are sure there are no new folders to raise an error if
+something unexpected happens.}
 
 \item{update}{Logical, defaults to FALSE. If TRUE, checks on Google Drive for
 newly updated files or folders, otherwise it assumes that only files and
