@@ -61,12 +61,15 @@
     <loc>https://giocomai.github.io/rbackupr/reference/rb_get_cache_table_name.html</loc>
   </url>
   <url>
+    <loc>https://giocomai.github.io/rbackupr/reference/rb_get_file_cache.html</loc>
+  </url>
+  <url>
+    <loc>https://giocomai.github.io/rbackupr/reference/rb_get_folder_cache.html</loc>
+  </url>
+  <url>
     <loc>https://giocomai.github.io/rbackupr/reference/rb_set_cache_folder.html</loc>
   </url>
   <url>
     <loc>https://giocomai.github.io/rbackupr/reference/rb_set_project.html</loc>
-  </url>
-  <url>
-    <loc>https://giocomai.github.io/rbackupr/reference/rb_update_file_cache.html</loc>
   </url>
 </urlset>
