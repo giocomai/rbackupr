@@ -8,9 +8,11 @@ rb_backup(
   path,
   project = NULL,
   first_level_folders = NULL,
+  first_level_files = TRUE,
   glob = NULL,
   recurse = TRUE,
   create = TRUE,
+  update = FALSE,
   cache = TRUE,
   base_folder = "rbackupr"
 )
@@ -19,11 +21,15 @@ rb_backup(
 \item{path}{Local path where files to backup are stored.}
 
 \item{project}{Defaults to NULL. Can be set once per session with
-`rb_get_project_name()`. If given, must be a character vector of length one:
-name of the project.}
+`rb_get_project_name()`. If given, must be a character vector of length
+one: name of the project.}
 
 \item{first_level_folders}{Defaults to NULL. If given, clarifies which
 folders within the path should be uploaded, keeping the folder structure.}
+
+\item{first_level_files}{Logical, defaults to TRUE. If FALSE, first level
+files (files that are directly under the project folder, rather than a
+subfolder) are not included in the backup.}
 
 \item{glob}{Defaults to NULL. Can be used to filter type of files to upload,
 e.g. "*.jpg"}
@@ -31,6 +37,10 @@ e.g. "*.jpg"}
 \item{recurse}{Defaults to TRUE. Recurse up to one level.}
 
 \item{create}{Logical, defaults to TRUE. Create folders if missing.}
+
+\item{update}{Logical, defaults to FALSE. If TRUE, checks on Google Drive for
+newly updated files or folders, otherwise it assumes that only files and
+folders listed in cache exist online.}
 
 \item{cache}{Logical, defaults to TRUE. Stores locally cached information
 about base and project folder.}

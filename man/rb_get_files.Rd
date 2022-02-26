@@ -4,10 +4,18 @@
 \alias{rb_get_files}
 \title{Check if new files appeared inside an online folder}
 \usage{
-rb_get_files(dribble_id, update = FALSE, project = NULL, cache = TRUE)
+rb_get_files(
+  dribble_id,
+  parent_id = NULL,
+  update = FALSE,
+  project = NULL,
+  cache = TRUE
+)
 }
 \arguments{
 \item{dribble_id}{The dribble identifier of a folder on Google Drive.}
+
+\item{parent_id}{Defaults to NULL. If not given, defaults to project top folder. If given, must correpond to id of a folder.}
 
 \item{update}{Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.}
 

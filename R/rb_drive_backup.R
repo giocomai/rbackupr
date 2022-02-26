@@ -2,21 +2,27 @@
 #'
 #' @param path Local path where files to backup are stored.
 #' @param project Defaults to NULL. Can be set once per session with
-#'   `rb_get_project_name()`. If given, must be a character vector of length one:
-#'   name of the project.
+#'   `rb_get_project_name()`. If given, must be a character vector of length
+#'   one: name of the project.
 #' @param first_level_folders Defaults to NULL. If given, clarifies which
 #'   folders within the path should be uploaded, keeping the folder structure.
+#' @param first_level_files Logical, defaults to TRUE. If FALSE, first level
+#'   files (files that are directly under the project folder, rather than a
+#'   subfolder) are not included in the backup.
 #' @param glob Defaults to NULL. Can be used to filter type of files to upload,
 #'   e.g. "*.jpg"
 #' @param recurse Defaults to TRUE. Recurse up to one level.
 #' @param create Logical, defaults to TRUE. Create folders if missing.
+#' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for
+#'   newly updated files or folders, otherwise it assumes that only files and
+#'   folders listed in cache exist online.
 #' @param cache Logical, defaults to TRUE. Stores locally cached information
 #'   about base and project folder.
 #' @param base_folder Name of base folder, defaults to `rbackupr`
 #'
 #' @return
 #' @export
-#'
+#' 
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -26,90 +32,71 @@
 rb_backup <- function(path,
                       project = NULL,
                       first_level_folders = NULL,
+                      first_level_files = TRUE,
                       glob = NULL,
                       recurse = TRUE,
                       create = TRUE,
+                      update = FALSE,
                       cache = TRUE,
                       base_folder = "rbackupr") {
+  
   project <- rb_get_project_name(project = project)
 
-  if (is.null(first_level_folders)) {
-    first_level_folders <- fs::dir_ls(
-      path = path,
-      recurse = FALSE,
-      type = "directory"
-    ) %>%
-      fs::path_file()
-  }
-
-  project_folder_df <- rb_drive_find_project(
+  project_folder_df <- rb_get_project(
     project = project,
     base_folder = base_folder,
     create = create,
     cache = cache
   )
 
-  ## check if folders exist in cache
-
-  rb_update_folder_cache(
-    dribble_id = project_folder_df,
-    project = project,
-    cache = cache
-  )
-
-  if (rb_check_cache(cache = cache)) {
-    table_name <- rb_get_cache_table_name(type = stringr::str_c("folders", "_", project))
-
-    db_connection <- RSQLite::dbConnect(
-      drv = RSQLite::SQLite(),
-      rb_get_cache_file()
-    )
-    db_table_exists_v <- RSQLite::dbExistsTable(
-      conn = db_connection,
-      name = table_name
-    )
-    if (db_table_exists_v) {
-      project_folder_df <- RSQLite::dbReadTable(
-        conn = db_connection,
-        name = table_name
-      ) %>%
-        dplyr::collect() %>%
-        tibble::as_tibble() %>%
-        dplyr::mutate(
-          id = googledrive:::as_id.character(x = .data$id),
-          parent_id = googledrive:::as_id.character(x = .data$parent_id)
-        )
-
-      if (nrow(project_folder_df) > 0) {
-        RSQLite::dbDisconnect(conn = db_connection)
-        return(project_folder_df)
-      }
+  # check local files in top level folder
+  
+  if (first_level_files==TRUE) {
+    
+    local_files_top <- fs::dir_ls(path = path, recurse = FALSE, type = "file", glob = glob) %>% 
+      fs::path_file()
+    
+    if (length(local_files_top)>0) {
+      previous_first_level_files <- rb_get_files(project_folder_df)
+      
+      warning("Missing functionality: Top level files bakcup not yet implemented")
+      # TODO actually introduce upload
+      
+    } else {
+     # do nothing: if there are not files, just move ahead 
     }
   }
 
-  # if not in cache, check if folders existing on Google Drive
-
-  project_folders_ls <- googledrive::drive_ls(
-    path = googledrive::as_id(project_folder_df$id),
-    recursive = FALSE,
-    type = "folder"
-  )
-
-  ## if they don't exist, create them
-
-  new_folders_df <- purrr::map_dfr(
-    .x = new_folder_names,
-    .f = function(x) {
-      googledrive::drive_mkdir(
-        name = x,
-        path = googledrive::as_id(project_folder_df$id)
-      ) %>%
-        dplyr::select(.data$name, .data$id) %>%
-        dplyr::mutate(parent_id = googledrive:::as_id.character(project_folder_df$id))
+  ## check if folders exist in cache
+  local_first_level_folders <- fs::dir_ls(
+    path = path,
+    recurse = FALSE,
+    type = "directory"
+  ) %>%
+    fs::path_file()
+  
+  if (is.null(first_level_folders)==FALSE) {
+    # first, check if given first_level_folders exist locally
+    
+    if (Reduce(`|`, first_level_folders %in% local_first_level_folders)==FALSE) {
+      missing_local <- first_level_folders[first_level_folders %in% local_first_level_folders==FALSE]
+      first_level_folders <- first_level_folders[first_level_folders %in% local_first_level_folders==TRUE]
+      warning(stringr::str_c("The following folders do not exist locally: ",stringr::str_c(missing_local, collapse = ";")))
     }
-  )
 
-
+  } else {
+    first_level_folders <- first_level_folders
+  }
+  
+  folders_df <- rb_drive_create_folders(folders = first_level_folders, 
+                                        parent_id = project_folder_df,
+                                        project = project, 
+                                        update = update)
+  
+  
+  ###################
+ 
+  ###################
 
   purrr::walk(
     .x = first_level_folders,

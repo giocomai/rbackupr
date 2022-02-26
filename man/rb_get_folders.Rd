@@ -2,18 +2,20 @@
 % Please edit documentation in R/rb_get_cache.R
 \name{rb_get_folders}
 \alias{rb_get_folders}
-\title{Gets cached folder with given parent, or update them from Google Drive upon request}
+\title{Gets cached folder with given parent, or update them from Google Drive upon
+request}
 \usage{
 rb_get_folders(dribble_id, update = FALSE, project = NULL, cache = TRUE)
 }
 \arguments{
 \item{dribble_id}{The dribble identifier of a folder on Google Drive.}
 
-\item{update}{Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.}
+\item{update}{Logical, defaults to FALSE. If TRUE, checks on Google Drive for
+newly updated folders.}
 
 \item{project}{Defaults to NULL. Can be set once per session with
-`rb_get_project_name()`. If given, must be a character vector of length one:
-name of the project.}
+`rb_get_project_name()`. If given, must be a character vector of length
+one: name of the project.}
 
 \item{cache}{Logical, defaults to TRUE. Stores locally cached information
 about base and project folder.}
@@ -23,7 +25,8 @@ A data frame with three columns: name (of the folder), id (of the
   dribble of the folder), parent_id (dribble id of the parent folder)
 }
 \description{
-Gets cached folder with given parent, or update them from Google Drive upon request
+Gets cached folder with given parent, or update them from Google Drive upon
+request
 }
 \examples{
 

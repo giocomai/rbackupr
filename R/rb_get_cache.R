@@ -1,10 +1,12 @@
-#' Gets cached folder with given parent, or update them from Google Drive upon request
+#' Gets cached folder with given parent, or update them from Google Drive upon
+#' request
 #'
 #' @param dribble_id The dribble identifier of a folder on Google Drive.
-#' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.
+#' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for
+#'   newly updated folders.
 #' @param project Defaults to NULL. Can be set once per session with
-#'   `rb_get_project_name()`. If given, must be a character vector of length one:
-#'   name of the project.
+#'   `rb_get_project_name()`. If given, must be a character vector of length
+#'   one: name of the project.
 #' @param cache Logical, defaults to TRUE. Stores locally cached information
 #'   about base and project folder.
 #'
@@ -110,6 +112,7 @@ rb_get_folders <- function(dribble_id,
 #' Check if new files appeared inside an online folder
 #'
 #' @param dribble_id The dribble identifier of a folder on Google Drive.
+#' @param parent_id Defaults to NULL. If not given, defaults to project top folder. If given, must correpond to id of a folder.
 #' @param update Logical, defaults to FALSE. If TRUE, checks on Google Drive for newly updated folders.
 #' @param project Defaults to NULL. Can be set once per session with
 #'   `rb_get_project_name()`. If given, must be a character vector of length one:
@@ -127,6 +130,7 @@ rb_get_folders <- function(dribble_id,
 #'   rb_get_files(rb_drive_find_project())
 #' }
 rb_get_files <- function(dribble_id,
+                         parent_id = NULL,
                          update = FALSE,
                          project = NULL,
                          cache = TRUE) {
@@ -171,8 +175,15 @@ rb_get_files <- function(dribble_id,
   } else {
     previous_files_df <- tibble::tibble(
       name = as.character(NA),
-      id = googledrive::as_id("x"),
-      parent_id = googledrive:::as_id.character(dribble_id)
+      id = googledrive:::as_id.character("x"),
+      mimeType = as.character(NA),
+      createdTime = as.character(NA),
+      modifiedTime = as.character(NA),
+      originalFilename = as.character(NA),
+      fullFileExtension = as.character(NA),
+      size = as.character(NA),
+      md5Checksum = as.character(NA),
+      parent_id = googledrive:::as_id.character(dribble_id),
     ) %>%
       dplyr::slice(0)
   }
