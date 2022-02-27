@@ -22,6 +22,7 @@
 #' }
 rb_drive_create_folders <- function(folders,
                                     parent_id,
+                                    relative_path = NULL,
                                     project = NULL,
                                     update = FALSE) {
   if (is.data.frame(parent_id) == TRUE) {
@@ -35,17 +36,22 @@ rb_drive_create_folders <- function(folders,
   folders_on_drive <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
-    update = update,
-    cache = cache
+    update = update
   )
 
   new_folder_names <- folders[(folders %in% folders_on_drive$name) == FALSE]
 
+  if (is.null(relative_path) == FALSE) {
+    relative_path <- relative_path[(folders %in% folders_on_drive$name) == FALSE]
+  }
+
+
   # create folders if they do not exist
 
-  new_folders_df <- purrr::map_dfr(
+  new_folders_df <- purrr::map2_dfr(
     .x = new_folder_names,
-    .f = function(x) {
+    .y = relative_path,
+    .f = function(x, y) {
       new_folder_dribble <- googledrive::drive_mkdir(
         name = x,
         path = googledrive::as_id(parent_id)
@@ -53,9 +59,17 @@ rb_drive_create_folders <- function(folders,
         dplyr::select(.data$name, .data$id) %>%
         dplyr::mutate(parent_id = googledrive:::as_id.character(parent_id))
 
+      if (is.null(y)) {
+        y <- rb_get_relative_path(
+          dribble_id = new_folder_dribble$id,
+          project = project
+        )
+      }
+
       new_folder_for_cache_df <- rb_add_folder_to_cache(
         dribble = new_folder_dribble,
-        parent_id = parent_id
+        parent_id = parent_id,
+        relative_path = y
       )
 
       new_folder_for_cache_df
@@ -65,8 +79,7 @@ rb_drive_create_folders <- function(folders,
   folders_on_drive_df <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
-    update = FALSE,
-    cache = cache
+    update = FALSE
   )
 
 

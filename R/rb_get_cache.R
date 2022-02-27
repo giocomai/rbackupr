@@ -178,7 +178,7 @@ rb_get_files <- function(dribble_id,
       tibble::as_tibble() %>%
       dplyr::mutate(
         id = googledrive:::as_id.character(x = .data$id),
-        parent_id = googledrive:::as_id.character(x = .data$id)
+        parent_id = googledrive:::as_id.character(x = .data$parent_id)
       )
   } else {
     previous_files_df <- tibble::tibble(

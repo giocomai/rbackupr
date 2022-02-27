@@ -4,7 +4,13 @@
 \alias{rb_drive_create_folders}
 \title{Create missing folders and get data frame with identifiers of all given folders}
 \usage{
-rb_drive_create_folders(folders, parent_id, project = NULL, update = FALSE)
+rb_drive_create_folders(
+  folders,
+  parent_id,
+  relative_path = NULL,
+  project = NULL,
+  update = FALSE
+)
 }
 \arguments{
 \item{folders}{A character vector of folder names.}

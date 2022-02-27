@@ -94,242 +94,111 @@ rb_backup <- function(path,
     first_level_folders <- local_first_level_folders
   }
 
+  all_sub_folders <- fs::dir_ls(
+    path = fs::path(path, first_level_folders),
+    recurse = TRUE,
+    type = "directory"
+  )
+
+  folders_to_process <- tibble::tibble(full_path = c(fs::path(path, first_level_folders), all_sub_folders)) %>%
+    dplyr::mutate(relative_path = stringr::str_remove(
+      string = .data$full_path,
+      pattern = stringr::str_c(path, "/")
+    )) %>%
+    dplyr::mutate(
+      level = .data$relative_path %>%
+        stringr::str_count(pattern = "/"),
+      processed_folder = FALSE,
+      processed_files = FALSE
+    ) %>%
+    dplyr::filter(.data$level <= max_level) %>%
+    dplyr::arrange(.data$level) %>%
+    dplyr::mutate(folder_name = fs::path_file(.data$relative_path)) %>%
+    dplyr::mutate(folder_id = as.character(NA)) %>%
+    dplyr::mutate(parent_folder_path = fs::path_dir(.data$relative_path)) %>%
+    dplyr::mutate(parent_folder_id = as.character(NA))
 
 
-  level <- 0
+  for (i in seq_along(unique(folders_to_process$level))) {
+    current_level <- i - 1
+    current_folders_to_process <- folders_to_process %>%
+      dplyr::filter(.data$level == current_level)
 
-  while (level < max_level) {
-    if (level == 0) {
-      folders_df <- rb_drive_create_folders(
-        folders = first_level_folders,
-        parent_id = project_folder_df,
+    current_folders_to_process$parent_folder_id[current_folders_to_process$parent_folder_path == "."] <- rb_get_project(project = project, base_folder = base_folder) %>% dplyr::pull(id)
+    current_folders_to_process$parent_folder_path[current_folders_to_process$parent_folder_path == "."] <- project
+
+
+    for (j in seq_along(current_folders_to_process$full_path)) {
+      new_folder_df <- rb_drive_create_folders(
+        folders = current_folders_to_process$folder_name[j],
+        parent_id = current_folders_to_process$parent_folder_id[j],
+        relative_path = current_folders_to_process$relative_path[j],
         project = project,
         update = update
       )
-    } else if (level == 1) {
-      purrr::walk(
-        .x = seq_along(folders_df$name),
-        .f = function(i) {
-          local_folders <- fs::dir_ls()
-        }
-      )
 
+      selected_row <- which(folders_to_process$full_path == current_folders_to_process$full_path[j])
 
-
-      current_level_folders_local <- fs::dir_ls(
-        path = fs::path(path, folders_df$name),
-        recurse = FALSE,
-        type = "directory"
-      )
-    } else {
-      current_level_folders_local <- fs::dir_ls(
-        path = fs::path(current_level_folders_local),
-        recurse = FALSE,
-        type = "directory"
-      )
+      folders_to_process$folder_id[selected_row] <- new_folder_df$id
+      folders_to_process$parent_folder_id[selected_row] <- new_folder_df$parent_id
+      folders_to_process$parent_folder_path[folders_to_process$parent_folder_path == "."] <- project
+      folders_to_process$parent_folder_id[folders_to_process$parent_folder_path == folders_to_process$relative_path[selected_row]] <- new_folder_df$id
+      folders_to_process$processed_folder[selected_row] <- TRUE
     }
-
-    purrr::walk(
-      .x = current_level_folders_local,
-      .f = function(x) {
-        local_parent <- fs::path_dir(x)
-
-        rb_get_folders()
-
-        rb_drive_create_folders(
-          folders = fs::path_file(x),
-          parent_id = current_parent_id,
-          project = project,
-          update = update
-        )
-
-
-
-        remote_parent_id <- y
-        remote_parent_dribble <- googledrive::as_dribble(y)
-
-        local_files <- fs::dir_ls(
-          path = local_parent,
-          recurse = FALSE,
-          type = "file",
-          glob = glob
-        )
-
-        remote_files_df <- rb_get_files(dribble_id = remote_parent_id)
-
-        if (nrow(remote_files_df) == 0) {
-          files_to_upload <- local_files
-        } else {
-          files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name) == FALSE]
-        }
-
-        purrr::walk(
-          .x = files_to_upload,
-          .f = function(current_file) {
-            new_upload_dribble <- googledrive::drive_upload(
-              media = current_file,
-              path = remote_parent_dribble
-            )
-
-            rb_add_file_to_cache(
-              dribble = new_upload_dribble,
-              parent_id = remote_parent_id,
-              project = project
-            )
-          }
-        )
-      }
-    )
-
-
-    ################# to remove ###########
-    purrr::walk2(
-      .x = folders_df$name,
-      .y = folders_df$id,
-      .f = function(x, y) {
-        if (level == 0) {
-          local_parent <- fs::path(path, x)
-          remote_parent_id <- y
-          remote_parent_dribble <- googledrive::as_dribble(y)
-
-          local_files <- fs::dir_ls(
-            path = local_parent,
-            recurse = FALSE,
-            type = "file",
-            glob = glob
-          )
-
-          remote_files_df <- rb_get_files(dribble_id = remote_parent_id)
-
-          if (nrow(remote_files_df) == 0) {
-            files_to_upload <- local_files
-          } else {
-            files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name) == FALSE]
-          }
-
-          purrr::walk(
-            .x = files_to_upload,
-            .f = function(current_file) {
-              new_upload_dribble <- googledrive::drive_upload(
-                media = current_file,
-                path = remote_parent_dribble
-              )
-
-              rb_add_file_to_cache(
-                dribble = new_upload_dribble,
-                parent_id = remote_parent_id,
-                project = project
-              )
-            }
-          )
-        } else {
-          # when level more than 0
-        }
-      }
-    )
-
-    ################# end of to remove ###########
-
-    level <- level + 1
   }
 
 
-  ### now check folders one by one, recursively
+  for (i in seq_along(folders_to_process$full_path)) {
+    message(stringr::str_c("Now processing ", i, " of ", nrow(folders_to_process), ": ", folders_to_process$full_path[i]))
 
 
+    local_parent_relative <- folders_to_process$relative_path[i]
+    local_parent_full <- folders_to_process$full_path[i]
 
-  ###################
+    remote_parent_id <- folders_to_process$folder_id[i]
 
-  ###################
+    ## upload local files to current folder
 
-  purrr::walk(
-    .x = first_level_folders,
-    .f = function(x) {
-      current_folder_dribble <- project_folder_ls %>%
-        dplyr::filter(name == x)
 
-      if (nrow(current_folder_dribble) == 0) {
-        current_folder_dribble <- googledrive::drive_mkdir(
-          name = x,
-          path = project_folder_dribble
+    local_files <- fs::dir_ls(
+      path = local_parent_full,
+      recurse = FALSE,
+      type = "file",
+      glob = glob
+    )
+
+    remote_files_df <- rb_get_files(
+      dribble_id = remote_parent_id,
+      update = update,
+      project = project
+    )
+
+
+    if (nrow(remote_files_df) == 0) {
+      files_to_upload <- local_files
+    } else {
+      files_to_upload <- local_files[(fs::path_file(local_files) %in% remote_files_df$name) == FALSE]
+    }
+
+    remote_parent_dribble <- googledrive::as_dribble(x = googledrive::as_id(remote_parent_id))
+
+    purrr::walk(
+      .x = files_to_upload,
+      .f = function(current_file) {
+        new_upload_dribble <- googledrive::drive_upload(
+          media = current_file,
+          path = remote_parent_dribble
+        )
+
+        rb_add_file_to_cache(
+          dribble = new_upload_dribble,
+          parent_id = remote_parent_id,
+          project = project
         )
       }
+    )
 
-      current_folder_dribble_ls <- googledrive::drive_ls(path = current_folder_dribble)
-
-      current_local_media <- fs::dir_ls(
-        path = fs::path(path, x),
-        recurse = FALSE,
-        type = "file",
-        glob = glob
-      ) %>%
-        fs::path_file()
-
-      current_media_to_upload <- tibble::tibble(name = current_local_media) %>%
-        dplyr::anti_join(y = current_folder_dribble_ls, by = "name") %>%
-        dplyr::pull(name)
-
-      purrr::walk(
-        .x = fs::path(path, x, current_media_to_upload),
-        .f = function(current_media) {
-          googledrive::drive_upload(
-            media = current_media,
-            path = current_folder_dribble
-          )
-        }
-      )
-
-      if (recurse == TRUE) {
-        subfolder <- fs::dir_ls(path = fs::path(path, x), recurse = FALSE, type = "directory")
-
-        if (length(subfolder) > 0) {
-          current_folder_dribble_ls_folders <- googledrive::drive_ls(
-            path = current_folder_dribble,
-            type = "folder"
-          )
-
-
-          purrr::walk(
-            .x = subfolder %>%
-              fs::path_file(),
-            .f = function(current_subfolder) {
-              current_subfolder_dribble <- current_folder_dribble_ls_folders %>%
-                dplyr::filter(name == current_subfolder)
-
-              if (nrow(current_subfolder_dribble) == 0) {
-                current_subfolder_dribble <- googledrive::drive_mkdir(
-                  name = current_subfolder,
-                  path = current_folder_dribble
-                )
-              }
-
-              current_subfolder_dribble_ls <- googledrive::drive_ls(path = current_subfolder_dribble)
-
-              current_local_media_subfolder <- fs::dir_ls(
-                path = fs::path(path, x, current_subfolder),
-                recurse = FALSE,
-                type = "file",
-                glob = glob
-              ) %>%
-                fs::path_file()
-
-              current_media_subfolder_to_upload <- tibble::tibble(name = current_local_media_subfolder) %>%
-                dplyr::anti_join(y = current_subfolder_dribble_ls, by = "name") %>%
-                dplyr::pull(name)
-
-              purrr::walk(
-                .x = fs::path(path, x, current_subfolder, current_media_subfolder_to_upload),
-                .f = function(current_media_subfolder) {
-                  googledrive::drive_upload(
-                    media = current_media_subfolder,
-                    path = current_subfolder_dribble
-                  )
-                }
-              )
-            }
-          )
-        }
-      }
-    }
-  )
+    folders_to_process$processed_files[i] <- TRUE
+  }
+  folders_to_process
 }

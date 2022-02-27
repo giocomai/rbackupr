@@ -1,6 +1,6 @@
 Package: rbackupr
 Title: An R package to backup folders to Google Drive with limited permissions 
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Authors@R: 
     person(given = "Giorgio",
            family = "Comai",
