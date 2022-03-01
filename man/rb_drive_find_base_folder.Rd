@@ -7,7 +7,7 @@
 rb_drive_find_base_folder(
   base_folder = "rbackupr",
   create = FALSE,
-  cache = NULL
+  cache = TRUE
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ rb_drive_find_base_folder(
 
 \item{create}{Defaults to FALSE. If set to TRUE, the folder is create if not found.}
 
-\item{cache}{Logical, defaults to NULL, typically set with `rb_enable_cache()` / `rb_disable_cache()`}
+\item{cache}{Logical, defaults to TRUE. Can be se to NULL, and managed with `rb_enable_cache()` / `rb_disable_cache()`}
 }
 \value{
 

@@ -9,12 +9,25 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of rbackupr is to facilitate online backups to from R. At the
-current stage, it facilitates backups only to Google Drive, but may
-support other services in the future.
+The goal of rbackupr is to facilitate online backups to Google Drive
+from R. Key features:
 
-**Warning: This package is being overhauled and it is not functional at
-this stage**
+-   it uses requires limited permission (only to files created by this
+    app, not all of your Google Drive)
+-   it caches metadata locally for speedy updates
+-   it allows for easy management of multiple backups based on the idea
+    of “projects” located under a top level folder
+-   the top level folder on the local disk can be moved, or read from
+    somewhere else: all paths are relative to the base folder
+-   it allows for backups recursively (e.g. deeply nested folders), and
+    makes it easy to include only some of the contents (e.g. all “.csv”
+    files from all the subfolders that have a bunch of other files)
+
+**Warning: I have not finalised testing and documentation, but it seems
+to work as expected at this stage. Given that, by default, it requests
+access only to files created by itself, it should be mostly safe to use.
+Of course, make sure it is fit for (your) purpose. Consider creating
+your own Google App (see below).**
 
 ## Core motivation
 
@@ -102,18 +115,18 @@ purrr::walk(
 
 
 fs::dir_tree(base_temp_folder)
-#> /tmp/RtmpwuEIZx/rbackupr_testing
+#> /tmp/RtmpIEtxRk/rbackupr_testing
 #> ├── data_34
-#> │   ├── spreadsheet_34_5ce139b92a2e.csv
-#> │   └── spreadsheet_34_5ce154f88473.csv
+#> │   ├── spreadsheet_34_5c3240af716c.csv
+#> │   └── spreadsheet_34_5c327bd86062.csv
 #> ├── data_58
-#> │   ├── spreadsheet_58_5ce126b0f0c8.csv
-#> │   ├── spreadsheet_58_5ce139e68a68.csv
-#> │   └── spreadsheet_58_5ce15667f03c.csv
+#> │   ├── spreadsheet_58_5c321440281a.csv
+#> │   ├── spreadsheet_58_5c322a1153ef.csv
+#> │   └── spreadsheet_58_5c3255ec915a.csv
 #> └── data_74
-#>     ├── spreadsheet_74_5ce113d8bb6e.csv
-#>     ├── spreadsheet_74_5ce12a89c112.csv
-#>     └── spreadsheet_74_5ce15e6f6737.csv
+#>     ├── spreadsheet_74_5c323393fef0.csv
+#>     ├── spreadsheet_74_5c323a007f8f.csv
+#>     └── spreadsheet_74_5c324c0587d5.csv
 ```
 
 By default, `rbackupr` does not cache metadata files and folders it
@@ -197,7 +210,7 @@ rb_get_project()
 #> # A tibble: 1 × 3
 #>   name             id                                parent_id                  
 #>   <chr>            <drv_id>                          <chr>                      
-#> 1 rbackupr_testing 1qDwq0vp7MBRdzDjco6cEg6VVlZZ3G0VH 1DFtFrmrV1_szp3NrbuWkq45Fz…
+#> 1 rbackupr_testing 1inLe1aYhbKbIOUPnjPih9J-Z3q8mH-bw 1DFtFrmrV1_szp3NrbuWkq45Fz…
 ```
 
 Under the project folder, the real folders and files that are part of
@@ -208,9 +221,20 @@ We can see the folders included in the base project with:
 ``` r
 rb_get_project() %>% 
   rb_get_folders()
-#> # A tibble: 0 × 4
-#> # … with 4 variables: name <chr>, id <drv_id>, parent_id <drv_id>,
-#> #   relative_path <fs::path>
+#> # A tibble: 11 × 4
+#>    name           id                                parent_id      relative_path
+#>    <chr>          <drv_id>                          <drv_id>       <fs::path>   
+#>  1 data_34        1-KA38B0xhXstirvcWjQ21QMg3sjer38h 1inLe1aYhbKbI… data_34      
+#>  2 data_58        1WwA25vkN_tyT1v3i-q5YTVEDNicRy5n5 1inLe1aYhbKbI… data_58      
+#>  3 data_74        1gqeIudhtbR3qgP5uwDrHslRITg3AeHps 1inLe1aYhbKbI… data_74      
+#>  4 data_detail_43 1K7ehxCNDr06nAL-EaRw31aOFgdFLyPwK 1-KA38B0xhXst… …ta_detail_43
+#>  5 data_detail_46 1KgQk30czp4iaGTD0Lo_sAixkHsjDnwjA 1-KA38B0xhXst… …ta_detail_46
+#>  6 data_detail_52 1HyAfKdBBYBZCmJfkI_WXFw3UlpOdI9tr 1WwA25vkN_tyT… …ta_detail_52
+#>  7 data_detail_89 1DF-OYIGd6IBNYq7y93hBVUdaqS1PGeQF 1WwA25vkN_tyT… …ta_detail_89
+#>  8 data_detail_40 1QALXJAE5n1UTvtzhPLxwQ9ndqaSu7o_n 1gqeIudhtbR3q… …ta_detail_40
+#>  9 data_detail_71 1SDIjSc0nwAoBJjc3HPftBYNvnA78KnMd 1gqeIudhtbR3q… …ta_detail_71
+#> 10 deeper         1DE6FD_5-oMvml4LoR6ps3PZUOK5HM3bo 1DF-OYIGd6IBN… …il_89/deeper
+#> 11 much deeper    1YI1HQgufmFGafw7mHiTFHhyrrZFYNv7e 1DE6FD_5-oMvm… …/much deeper
 ```
 
 Then, for files, more details are stored in cache, including:
@@ -220,11 +244,15 @@ rb_get_project() %>%
   rb_get_folders() %>% 
   dplyr::slice(1) %>% 
   rb_get_files()
-#> # A tibble: 0 × 11
-#> # … with 11 variables: name <chr>, id <drv_id>, mimeType <chr>,
-#> #   createdTime <chr>, modifiedTime <chr>, originalFilename <chr>,
-#> #   fullFileExtension <chr>, size <chr>, md5Checksum <chr>, parent_id <drv_id>,
-#> #   rbackupr_cache_time <dttm>
+#> # A tibble: 4 × 11
+#>   name                  id    mimeType createdTime modifiedTime originalFilename
+#>   <chr>                 <drv> <chr>    <chr>       <chr>        <chr>           
+#> 1 spreadsheet_34_b0861… 1eBN… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…
+#> 2 spreadsheet_34_b0867… 1Oh_… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…
+#> 3 spreadsheet_34_4fef6… 1C9E… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…
+#> 4 spreadsheet_34_4fef7… 1Be3… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…
+#> # … with 5 more variables: fullFileExtension <chr>, size <chr>,
+#> #   md5Checksum <chr>, parent_id <drv_id>, rbackupr_cache_time <dbl>
 ```
 
 ## Creating your own app
@@ -278,3 +306,7 @@ Google Drive given by this app.
 
 For example, listing all files with `googledrive::drive_ls()` will only
 list files created with this app.
+
+## License
+
+Released under the MIT license.

@@ -16,7 +16,7 @@
 rb_drive_find_project <- function(project = NULL,
                                   base_folder = "rbackupr",
                                   create = TRUE,
-                                  cache = NULL) {
+                                  cache = TRUE) {
   project <- rb_get_project_name(project = project)
 
   if (rb_check_cache(cache = cache)) {
@@ -103,8 +103,13 @@ rb_drive_find_project <- function(project = NULL,
 
 
 #' @rdname rb_drive_find_project
-#' @examples rb_drive_create_project(project = "example")
+#' @examples 
+#' \dontrun{
+#' if (interactive()) {
+#' rb_drive_create_project(project = "example")
 #' @export
+#' }
+#' }
 rb_drive_create_project <- rb_drive_find_project
 
 #' @rdname rb_drive_find_project
@@ -116,7 +121,7 @@ rb_get_project <- rb_drive_find_project
 #'
 #' @param base_folder Name of base folder, defaults to "rbackupr".
 #' @param create Defaults to FALSE. If set to TRUE, the folder is create if not found.
-#' @param cache Logical, defaults to NULL, typically set with `rb_enable_cache()` / `rb_disable_cache()`
+#' @param cache Logical, defaults to TRUE. Can be se to NULL, and managed with `rb_enable_cache()` / `rb_disable_cache()`
 #'
 #' @return
 #' @export
@@ -129,7 +134,7 @@ rb_get_project <- rb_drive_find_project
 #' }
 rb_drive_find_base_folder <- function(base_folder = "rbackupr",
                                       create = FALSE,
-                                      cache = NULL) {
+                                      cache = TRUE) {
   if (rb_check_cache(cache = cache)) {
     db_connection <- RSQLite::dbConnect(
       drv = RSQLite::SQLite(),

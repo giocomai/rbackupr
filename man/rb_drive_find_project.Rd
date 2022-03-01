@@ -10,21 +10,21 @@ rb_drive_find_project(
   project = NULL,
   base_folder = "rbackupr",
   create = TRUE,
-  cache = NULL
+  cache = TRUE
 )
 
 rb_drive_create_project(
   project = NULL,
   base_folder = "rbackupr",
   create = TRUE,
-  cache = NULL
+  cache = TRUE
 )
 
 rb_get_project(
   project = NULL,
   base_folder = "rbackupr",
   create = TRUE,
-  cache = NULL
+  cache = TRUE
 )
 }
 \arguments{
@@ -45,6 +45,5 @@ if (interactive()) {
 }
 }
 
-rb_drive_create_project(project = "example")
 rb_get_project(project = "example")
 }

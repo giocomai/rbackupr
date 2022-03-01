@@ -14,10 +14,22 @@
 rb_add_folder_to_cache <- function(dribble,
                                    parent_id,
                                    relative_path,
-                                   project = NULL) {
+                                   project = NULL,
+                                   cache = TRUE) {
   project <- rb_get_project_name(project = project)
 
   table_name <- rb_get_cache_table_name(type = stringr::str_c("folders_", project))
+
+  new_folder_for_cache_df <- dribble %>%
+    dplyr::select(.data$name, .data$id) %>%
+    dplyr::mutate(
+      parent_id = parent_id,
+      relative_path = relative_path
+    )
+
+  if (cache == FALSE) {
+    return(new_folder_for_cache_df)
+  }
 
   db_connection <- RSQLite::dbConnect(
     drv = RSQLite::SQLite(),
@@ -28,13 +40,6 @@ rb_add_folder_to_cache <- function(dribble,
     conn = db_connection,
     name = table_name
   )
-
-  new_folder_for_cache_df <- dribble %>%
-    dplyr::select(.data$name, .data$id) %>%
-    dplyr::mutate(
-      parent_id = parent_id,
-      relative_path = relative_path
-    )
 
   if (nrow(new_folder_for_cache_df) > 0) {
     if (db_table_exists_v == FALSE) {

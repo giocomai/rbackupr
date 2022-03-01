@@ -4,7 +4,13 @@
 \alias{rb_add_folder_to_cache}
 \title{Add folder to cache}
 \usage{
-rb_add_folder_to_cache(dribble, parent_id, relative_path, project = NULL)
+rb_add_folder_to_cache(
+  dribble,
+  parent_id,
+  relative_path,
+  project = NULL,
+  cache = TRUE
+)
 }
 \arguments{
 \item{dribble}{A dribble.}

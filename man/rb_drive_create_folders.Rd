@@ -9,7 +9,9 @@ rb_drive_create_folders(
   parent_id,
   relative_path = NULL,
   project = NULL,
-  update = FALSE
+  update = FALSE,
+  base_folder = "rbackupr",
+  cache = TRUE
 )
 }
 \arguments{

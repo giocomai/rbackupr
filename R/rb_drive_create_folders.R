@@ -24,7 +24,9 @@ rb_drive_create_folders <- function(folders,
                                     parent_id,
                                     relative_path = NULL,
                                     project = NULL,
-                                    update = FALSE) {
+                                    update = FALSE,
+                                    base_folder = "rbackupr",
+                                    cache = TRUE) {
   if (is.data.frame(parent_id) == TRUE) {
     if ("id" %in% colnames(parent_id)) {
       parent_id <- parent_id %>%
@@ -32,11 +34,12 @@ rb_drive_create_folders <- function(folders,
     }
   }
 
-
   folders_on_drive <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
-    update = update
+    update = update,
+    base_folder = base_folder,
+    cache = cache
   )
 
   new_folder_names <- folders[(folders %in% folders_on_drive$name) == FALSE]
@@ -69,7 +72,9 @@ rb_drive_create_folders <- function(folders,
       new_folder_for_cache_df <- rb_add_folder_to_cache(
         dribble = new_folder_dribble,
         parent_id = parent_id,
-        relative_path = y
+        relative_path = y,
+        project = project,
+        cache = cache
       )
 
       new_folder_for_cache_df
@@ -79,7 +84,9 @@ rb_drive_create_folders <- function(folders,
   folders_on_drive_df <- rb_get_folders(
     dribble_id = parent_id,
     project = project,
-    update = FALSE
+    update = FALSE,
+    base_folder = base_folder,
+    cache = cache
   )
 
 

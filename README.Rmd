@@ -20,9 +20,15 @@ set.seed(42)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of rbackupr is to facilitate online backups to from R. At the current stage, it facilitates backups only to Google Drive, but may support other services in the future.
+The goal of rbackupr is to facilitate online backups to Google Drive from R. Key features:
 
-__Warning: This package is being overhauled and it is not functional at this stage__
+- it uses requires limited permission (only to files created by this app, not all of your Google Drive)
+- it caches metadata locally for speedy updates
+- it allows for easy management of multiple backups based on the idea of "projects" located under a top level folder
+- the top level folder on the local disk can be moved, or read from somewhere else: all paths are relative to the base folder
+- it allows for backups recursively (e.g. deeply nested folders), and makes it easy to include only some of the contents (e.g. all ".csv" files from all the subfolders that have a bunch of other files)
+
+__Warning: I have not finalised testing and documentation, but it seems to work as expected at this stage. Given that, by default, it requests access only to files created by itself, it should be mostly safe to use. Of course, make sure it is fit for (your) purpose. Consider creating your own Google App (see below).__
 
 
 ## Core motivation
@@ -199,3 +205,7 @@ Once authenticated, you can still use `googledrive`. Keep in mind that some thin
 
 For example, listing all files with `googledrive::drive_ls()` will only list files created with this app.
 
+
+## License
+
+Released under the MIT license.
