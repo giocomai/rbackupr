@@ -61,14 +61,37 @@ rb_backup <- function(path,
   # check local files in top level folder
 
   if (first_level_files == TRUE) {
-    local_files_top <- fs::dir_ls(path = path, recurse = FALSE, type = "file", glob = glob) %>%
+    local_files_top <- fs::dir_ls(path = path,
+                                  recurse = FALSE,
+                                  type = "file",
+                                  glob = glob) %>%
       fs::path_file()
 
     if (length(local_files_top) > 0) {
       previous_first_level_files <- rb_get_files(project_folder_df)
 
-      warning("Missing functionality: Top level files bakcup not yet implemented")
-      # TODO actually introduce upload
+      files_to_upload <- local_files_top[(local_files_top %in% previous_first_level_files$name)==FALSE]
+      
+      remote_parent_id <- project_folder_df$id
+      
+      remote_parent_dribble <- googledrive::as_dribble(x = googledrive::as_id(remote_parent_id))
+      
+      purrr::walk(
+        .x = fs::path(path, files_to_upload),
+        .f = function(current_file) {
+          new_upload_dribble <- googledrive::drive_upload(
+            media = current_file,
+            path = remote_parent_dribble
+          )
+          
+          rb_add_file_to_cache(
+            dribble = new_upload_dribble,
+            parent_id = remote_parent_id,
+            project = project
+          )
+        }
+      )
+      
     } else {
       # do nothing: if there are not files, just move ahead
     }
