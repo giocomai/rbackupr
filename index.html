@@ -8,8 +8,8 @@
 <meta name="description" content="Backup files and folders to Google Drive without giving access to all of your drive.">
 <title>An R package to backup folders to Google Drive with limited permissions  • rbackupr</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="An R package to backup folders to Google Drive with limited permissions ">
 <meta property="og:description" content="Backup files and folders to Google Drive without giving access to all of your drive.">
@@ -89,121 +89,121 @@
 </h2>
 <p>You can install the development version of <code>rbackupr</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"giocomai/rbackupr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"giocomai/rbackupr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="how-to-use">How to use<a class="anchor" aria-label="anchor" href="#how-to-use"></a>
 </h2>
 <p>In order to show how this package works, we will first create some files with random data in the temporary folder. So this is how our base folder looks like: a main folder, with some sub-folders, and some files within each of them.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span>
-<span class="va">base_temp_folder</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html" class="external-link">dir_create</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
-                                            <span class="st">"rbackupr_testing"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">subfolder_names</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html" class="external-link">str_c</a></span><span class="op">(</span><span class="st">"data_"</span>,
-                                  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span><span class="op">:</span><span class="fl">100</span>, size <span class="op">=</span> <span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span>
-  .x <span class="op">=</span> <span class="va">subfolder_names</span>,
-  .f <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">current_folder</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">base_temp_folder</span>, <span class="va">x</span><span class="op">)</span>
-    <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html" class="external-link">dir_create</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">current_folder</span><span class="op">)</span>
-    <span class="va">current_number</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span>string <span class="op">=</span> <span class="va">x</span>, pattern <span class="op">=</span> <span class="st">"[[:digit:]]+"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-      <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span>
-    
-    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span>
-      .x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
-      .f <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
-        <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>numbers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, mean <span class="op">=</span> <span class="va">current_number</span><span class="op">)</span><span class="op">)</span>, 
-                         file <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_temp.html" class="external-link">file_temp</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html" class="external-link">str_c</a></span><span class="op">(</span><span class="st">"spreadsheet_"</span>, <span class="va">current_number</span>, <span class="st">"_"</span><span class="op">)</span>,
-                                              tmp_dir <span class="op">=</span> <span class="va">current_folder</span>,
-                                              ext <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span><span class="op">)</span>
-      <span class="op">}</span><span class="op">)</span>
-  <span class="op">}</span><span class="op">)</span>
-
-
-<span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">base_temp_folder</span><span class="op">)</span>
-<span class="co">#&gt; /tmp/RtmpIEtxRk/rbackupr_testing</span>
-<span class="co">#&gt; ├── data_34</span>
-<span class="co">#&gt; │   ├── spreadsheet_34_5c3240af716c.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_34_5c327bd86062.csv</span>
-<span class="co">#&gt; ├── data_58</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_5c321440281a.csv</span>
-<span class="co">#&gt; │   ├── spreadsheet_58_5c322a1153ef.csv</span>
-<span class="co">#&gt; │   └── spreadsheet_58_5c3255ec915a.csv</span>
-<span class="co">#&gt; └── data_74</span>
-<span class="co">#&gt;     ├── spreadsheet_74_5c323393fef0.csv</span>
-<span class="co">#&gt;     ├── spreadsheet_74_5c323a007f8f.csv</span>
-<span class="co">#&gt;     └── spreadsheet_74_5c324c0587d5.csv</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span></span>
+<span><span class="va">base_temp_folder</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html" class="external-link">dir_create</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                                            <span class="st">"rbackupr_testing"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">subfolder_names</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html" class="external-link">str_c</a></span><span class="op">(</span><span class="st">"data_"</span>,</span>
+<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span><span class="op">:</span><span class="fl">100</span>, size <span class="op">=</span> <span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span></span>
+<span>  .x <span class="op">=</span> <span class="va">subfolder_names</span>,</span>
+<span>  .f <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">current_folder</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">base_temp_folder</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html" class="external-link">dir_create</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">current_folder</span><span class="op">)</span></span>
+<span>    <span class="va">current_number</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span>string <span class="op">=</span> <span class="va">x</span>, pattern <span class="op">=</span> <span class="st">"[[:digit:]]+"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span></span>
+<span>      .x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      .f <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>numbers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, mean <span class="op">=</span> <span class="va">current_number</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>                         file <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_temp.html" class="external-link">file_temp</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html" class="external-link">str_c</a></span><span class="op">(</span><span class="st">"spreadsheet_"</span>, <span class="va">current_number</span>, <span class="st">"_"</span><span class="op">)</span>,</span>
+<span>                                              tmp_dir <span class="op">=</span> <span class="va">current_folder</span>,</span>
+<span>                                              ext <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">base_temp_folder</span><span class="op">)</span></span>
+<span><span class="co">#&gt; /tmp/RtmpIEtxRk/rbackupr_testing</span></span>
+<span><span class="co">#&gt; ├── data_34</span></span>
+<span><span class="co">#&gt; │   ├── spreadsheet_34_5c3240af716c.csv</span></span>
+<span><span class="co">#&gt; │   └── spreadsheet_34_5c327bd86062.csv</span></span>
+<span><span class="co">#&gt; ├── data_58</span></span>
+<span><span class="co">#&gt; │   ├── spreadsheet_58_5c321440281a.csv</span></span>
+<span><span class="co">#&gt; │   ├── spreadsheet_58_5c322a1153ef.csv</span></span>
+<span><span class="co">#&gt; │   └── spreadsheet_58_5c3255ec915a.csv</span></span>
+<span><span class="co">#&gt; └── data_74</span></span>
+<span><span class="co">#&gt;     ├── spreadsheet_74_5c323393fef0.csv</span></span>
+<span><span class="co">#&gt;     ├── spreadsheet_74_5c323a007f8f.csv</span></span>
+<span><span class="co">#&gt;     └── spreadsheet_74_5c324c0587d5.csv</span></span></code></pre></div>
 <p>By default, <code>rbackupr</code> does not cache metadata files and folders it stores on Google Drive, but you are strongly encouraged to do so. You can do so with <code><a href="reference/rb_enable_cache.html">rb_enable_cache()</a></code>. By default, metadata will be cached in the current active directory, but if you use <code>rbackupr</code> with different projects, you may not want to leave files with cached metadata scattered around your local drive, but rather keep them in place where they can be accessed. Something like this could typically be included at the beginning of <code>rbackupr</code> backup scripts.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/rb_enable_cache.html">rb_enable_cache</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="reference/rb_set_cache_folder.html">rb_set_cache_folder</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">path_home_r</a></span><span class="op">(</span><span class="op">)</span>,
-                                    <span class="st">"R"</span>,
-                                    <span class="st">"rb_data"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="reference/rb_create_cache_folder.html">rb_create_cache_folder</a></span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://giocomai.github.io/rbackupr/">"rbackupr"</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/rb_enable_cache.html">rb_enable_cache</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/rb_set_cache_folder.html">rb_set_cache_folder</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">path_home_r</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                                    <span class="st">"R"</span>,</span>
+<span>                                    <span class="st">"rb_data"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/rb_create_cache_folder.html">rb_create_cache_folder</a></span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>To reduce mixing of files you uploaded with <code>rbackupr</code> with other files you likely have on Google Drive, all your files and folders are stored under a base folder, that by default is called “rbackupr”. You can call your base folder something else, you can have more than one base folder, but you’re probably fine just by keeping the defaults. Under your base folder, you will have a “project” folder, and under that folder, you will actually have all your files related to that project.</p>
 <p>No matter full path on your files on your hard drive, the folder you set up to backup will correspond to the project folder.</p>
 <p>So the first step you need to take, is set a project for the current session, and then actually create its own folder on Google Drive, if it doesn’t yet exist.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_set_project.html">rb_set_project</a></span><span class="op">(</span>project <span class="op">=</span> <span class="st">"rbackupr_testing"</span><span class="op">)</span> <span class="co"># this will set the project for the current session</span>
-
-<span class="fu"><a href="reference/rb_drive_find_project.html">rb_drive_create_project</a></span><span class="op">(</span>create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># if it already exists, it just returns its dribble</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rb_set_project.html">rb_set_project</a></span><span class="op">(</span>project <span class="op">=</span> <span class="st">"rbackupr_testing"</span><span class="op">)</span> <span class="co"># this will set the project for the current session</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/rb_drive_find_project.html">rb_drive_create_project</a></span><span class="op">(</span>create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># if it already exists, it just returns its dribble</span></span></code></pre></div>
 <p>At this stage, among all your files and folder on Google Drive, you should expect to find a folder called <code>rbackupr</code> by default (you can customise this in <code><a href="reference/rb_drive_find_project.html">rb_drive_create_project()</a></code>). Within that folder, you will find another folder, <code>rbackupr_testing</code> (the one we set as project). All the files you backup from now on in the current session will be located under this folder.</p>
 <p>Notice that since we are giving only the <code>drive.file</code> scope, i.e. only access to files and folders created with the current app, if you run <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code> you should only see those two folders and nothing else.</p>
 <p>The following steps are based on the basic idea of caching locally key information about online resources stored by Google Drive This is helpful in particular considering the fact that if you have many files, retrieving just a full file list from Google Drive to check what needs to be uploaded can be extremely time-consuming. In the local cache, for simplicity, not all data that are part of a dribble are stored.</p>
 <p>For the base folder, under which all projects are expected to be located, only name and dribble id are stored. Indeed, they have no “parent folder”.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_base_folder.html">rb_drive_find_base_folder</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 1 × 2</span>
-<span class="co">#&gt;   name     id                               </span>
-<span class="co">#&gt;   &lt;chr&gt;    &lt;drv_id&gt;                         </span>
-<span class="co">#&gt; 1 rbackupr 1DFtFrmrV1_szp3NrbuWkq45FzozFwzOy</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rb_drive_find_base_folder.html">rb_drive_find_base_folder</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 2</span></span>
+<span><span class="co">#&gt;   name     id                               </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;drv_id&gt;                         </span></span>
+<span><span class="co">#&gt; 1 rbackupr 1DFtFrmrV1_szp3NrbuWkq45FzozFwzOy</span></span></code></pre></div>
 <p>Even if all projects are expected to be located under a single base folder, local cache for them stores also the id of the base folder as <code>parent_id</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 1 × 3</span>
-<span class="co">#&gt;   name             id                                parent_id                  </span>
-<span class="co">#&gt;   &lt;chr&gt;            &lt;drv_id&gt;                          &lt;chr&gt;                      </span>
-<span class="co">#&gt; 1 rbackupr_testing 1inLe1aYhbKbIOUPnjPih9J-Z3q8mH-bw 1DFtFrmrV1_szp3NrbuWkq45Fz…</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 3</span></span>
+<span><span class="co">#&gt;   name             id                                parent_id                  </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;            &lt;drv_id&gt;                          &lt;chr&gt;                      </span></span>
+<span><span class="co">#&gt; 1 rbackupr_testing 1inLe1aYhbKbIOUPnjPih9J-Z3q8mH-bw 1DFtFrmrV1_szp3NrbuWkq45Fz…</span></span></code></pre></div>
 <p>Under the project folder, the real folders and files that are part of the backup are stored.</p>
 <p>We can see the folders included in the base project with:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 11 × 4</span>
-<span class="co">#&gt;    name           id                                parent_id      relative_path</span>
-<span class="co">#&gt;    &lt;chr&gt;          &lt;drv_id&gt;                          &lt;drv_id&gt;       &lt;fs::path&gt;   </span>
-<span class="co">#&gt;  1 data_34        1-KA38B0xhXstirvcWjQ21QMg3sjer38h 1inLe1aYhbKbI… data_34      </span>
-<span class="co">#&gt;  2 data_58        1WwA25vkN_tyT1v3i-q5YTVEDNicRy5n5 1inLe1aYhbKbI… data_58      </span>
-<span class="co">#&gt;  3 data_74        1gqeIudhtbR3qgP5uwDrHslRITg3AeHps 1inLe1aYhbKbI… data_74      </span>
-<span class="co">#&gt;  4 data_detail_43 1K7ehxCNDr06nAL-EaRw31aOFgdFLyPwK 1-KA38B0xhXst… …ta_detail_43</span>
-<span class="co">#&gt;  5 data_detail_46 1KgQk30czp4iaGTD0Lo_sAixkHsjDnwjA 1-KA38B0xhXst… …ta_detail_46</span>
-<span class="co">#&gt;  6 data_detail_52 1HyAfKdBBYBZCmJfkI_WXFw3UlpOdI9tr 1WwA25vkN_tyT… …ta_detail_52</span>
-<span class="co">#&gt;  7 data_detail_89 1DF-OYIGd6IBNYq7y93hBVUdaqS1PGeQF 1WwA25vkN_tyT… …ta_detail_89</span>
-<span class="co">#&gt;  8 data_detail_40 1QALXJAE5n1UTvtzhPLxwQ9ndqaSu7o_n 1gqeIudhtbR3q… …ta_detail_40</span>
-<span class="co">#&gt;  9 data_detail_71 1SDIjSc0nwAoBJjc3HPftBYNvnA78KnMd 1gqeIudhtbR3q… …ta_detail_71</span>
-<span class="co">#&gt; 10 deeper         1DE6FD_5-oMvml4LoR6ps3PZUOK5HM3bo 1DF-OYIGd6IBN… …il_89/deeper</span>
-<span class="co">#&gt; 11 much deeper    1YI1HQgufmFGafw7mHiTFHhyrrZFYNv7e 1DE6FD_5-oMvm… …/much deeper</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 11 × 4</span></span>
+<span><span class="co">#&gt;    name           id                                parent_id      relative_path</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;          &lt;drv_id&gt;                          &lt;drv_id&gt;       &lt;fs::path&gt;   </span></span>
+<span><span class="co">#&gt;  1 data_34        1-KA38B0xhXstirvcWjQ21QMg3sjer38h 1inLe1aYhbKbI… data_34      </span></span>
+<span><span class="co">#&gt;  2 data_58        1WwA25vkN_tyT1v3i-q5YTVEDNicRy5n5 1inLe1aYhbKbI… data_58      </span></span>
+<span><span class="co">#&gt;  3 data_74        1gqeIudhtbR3qgP5uwDrHslRITg3AeHps 1inLe1aYhbKbI… data_74      </span></span>
+<span><span class="co">#&gt;  4 data_detail_43 1K7ehxCNDr06nAL-EaRw31aOFgdFLyPwK 1-KA38B0xhXst… …ta_detail_43</span></span>
+<span><span class="co">#&gt;  5 data_detail_46 1KgQk30czp4iaGTD0Lo_sAixkHsjDnwjA 1-KA38B0xhXst… …ta_detail_46</span></span>
+<span><span class="co">#&gt;  6 data_detail_52 1HyAfKdBBYBZCmJfkI_WXFw3UlpOdI9tr 1WwA25vkN_tyT… …ta_detail_52</span></span>
+<span><span class="co">#&gt;  7 data_detail_89 1DF-OYIGd6IBNYq7y93hBVUdaqS1PGeQF 1WwA25vkN_tyT… …ta_detail_89</span></span>
+<span><span class="co">#&gt;  8 data_detail_40 1QALXJAE5n1UTvtzhPLxwQ9ndqaSu7o_n 1gqeIudhtbR3q… …ta_detail_40</span></span>
+<span><span class="co">#&gt;  9 data_detail_71 1SDIjSc0nwAoBJjc3HPftBYNvnA78KnMd 1gqeIudhtbR3q… …ta_detail_71</span></span>
+<span><span class="co">#&gt; 10 deeper         1DE6FD_5-oMvml4LoR6ps3PZUOK5HM3bo 1DF-OYIGd6IBN… …il_89/deeper</span></span>
+<span><span class="co">#&gt; 11 much deeper    1YI1HQgufmFGafw7mHiTFHhyrrZFYNv7e 1DE6FD_5-oMvm… …/much deeper</span></span></code></pre></div>
 <p>Then, for files, more details are stored in cache, including:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="reference/rb_get_files.html">rb_get_files</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 4 × 11</span>
-<span class="co">#&gt;   name                  id    mimeType createdTime modifiedTime originalFilename</span>
-<span class="co">#&gt;   &lt;chr&gt;                 &lt;drv&gt; &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;           </span>
-<span class="co">#&gt; 1 spreadsheet_34_b0861… 1eBN… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…</span>
-<span class="co">#&gt; 2 spreadsheet_34_b0867… 1Oh_… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…</span>
-<span class="co">#&gt; 3 spreadsheet_34_4fef6… 1C9E… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…</span>
-<span class="co">#&gt; 4 spreadsheet_34_4fef7… 1Be3… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…</span>
-<span class="co">#&gt; # … with 5 more variables: fullFileExtension &lt;chr&gt;, size &lt;chr&gt;,</span>
-<span class="co">#&gt; #   md5Checksum &lt;chr&gt;, parent_id &lt;drv_id&gt;, rbackupr_cache_time &lt;dbl&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rb_drive_find_project.html">rb_get_project</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/rb_get_folders.html">rb_get_folders</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/rb_get_files.html">rb_get_files</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 11</span></span>
+<span><span class="co">#&gt;   name                  id    mimeType createdTime modifiedTime originalFilename</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                 &lt;drv&gt; &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;           </span></span>
+<span><span class="co">#&gt; 1 spreadsheet_34_b0861… 1eBN… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…</span></span>
+<span><span class="co">#&gt; 2 spreadsheet_34_b0867… 1Oh_… text/csv 2022-02-27… 2022-02-27T… spreadsheet_34_…</span></span>
+<span><span class="co">#&gt; 3 spreadsheet_34_4fef6… 1C9E… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…</span></span>
+<span><span class="co">#&gt; 4 spreadsheet_34_4fef7… 1Be3… text/csv 2022-03-01… 2022-03-01T… spreadsheet_34_…</span></span>
+<span><span class="co">#&gt; # … with 5 more variables: fullFileExtension &lt;chr&gt;, size &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   md5Checksum &lt;chr&gt;, parent_id &lt;drv_id&gt;, rbackupr_cache_time &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="creating-your-own-app">Creating your own app<a class="anchor" aria-label="anchor" href="#creating-your-own-app"></a>
@@ -220,12 +220,12 @@
 </ul>
 <p>Ultimately, <code>rbackupr</code> relies on <code>gargle</code> for the authentication, so you can still follow the relevant documentation to set some settings.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># See ?gargle_oauth_cache()</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>
-  gargle_oauth_email <span class="op">=</span> <span class="st">"jane@example.com"</span>,
-  gargle_oauth_cache <span class="op">=</span> <span class="st">"/path/to/folder/that/does/not/sync/to/cloud"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># See ?gargle_oauth_cache()</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
+<span>  gargle_oauth_email <span class="op">=</span> <span class="st">"jane@example.com"</span>,</span>
+<span>  gargle_oauth_cache <span class="op">=</span> <span class="st">"/path/to/folder/that/does/not/sync/to/cloud"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="database-cache-structure">Database cache structure<a class="anchor" aria-label="anchor" href="#database-cache-structure"></a>
@@ -290,7 +290,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer>
