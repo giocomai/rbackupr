@@ -52,7 +52,7 @@ rb_get_folders <- function(dribble_id,
       conn = db_connection,
       name = table_name
     ) %>%
-      dplyr::filter(dribble_id %in% .data$parent_id) %>%
+      dplyr::filter(.data$parent_id %in% dribble_id) %>%
       dplyr::collect() %>%
       tibble::as_tibble() %>%
       dplyr::mutate(
