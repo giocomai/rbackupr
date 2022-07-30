@@ -22,9 +22,13 @@ rb_drive_auth <- function(app = NULL,
                           path = NULL,
                           token = NULL) {
   if (is.null(app) == FALSE) {
-    googledrive::drive_auth_configure(app = app)
+    googledrive::drive_auth_configure(app = app, 
+                                      path = path,
+                                      token = token)
   } else {
-    googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
+    googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app, 
+                                      path = path,
+                                      token = token)
   }
   googledrive::drive_auth(scopes = scopes, 
                           path = path,
