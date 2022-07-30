@@ -54,9 +54,6 @@ about base and project folder.}
 
 \item{base_folder}{Name of base folder, defaults to `rbackupr`}
 }
-\value{
-
-}
 \description{
 Backup files
 }

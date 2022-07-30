@@ -15,9 +15,6 @@ rb_add_file_to_cache(dribble, parent_id, project = NULL)
 `rb_get_project_name()`. If given, must be a character vector of length
 one: name of the project.}
 }
-\value{
-
-}
 \description{
 Add file to cache
 }

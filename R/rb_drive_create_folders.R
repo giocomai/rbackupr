@@ -48,7 +48,6 @@ rb_drive_create_folders <- function(folders,
     relative_path <- relative_path[(folders %in% folders_on_drive$name) == FALSE]
   }
 
-
   # create folders if they do not exist
 
   new_folders_df <- purrr::map2_dfr(

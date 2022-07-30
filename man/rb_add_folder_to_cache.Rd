@@ -23,9 +23,6 @@ rb_add_folder_to_cache(
 `rb_get_project_name()`. If given, must be a character vector of length
 one: name of the project.}
 }
-\value{
-
-}
 \description{
 Add folder to cache
 }

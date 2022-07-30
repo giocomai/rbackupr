@@ -3,6 +3,8 @@
 #' @param app A Google app. See example, and dedicated gargle documentation.
 #' @param scopes Defaults to `https://www.googleapis.com/auth/drive.file`. See Google api documentation for details
 #'
+#' @inheritParams googledrive::drive_auth
+#'
 #' @return Nothing, used for its side effects, i.e. logging in your Google account.
 #' @export
 #'
@@ -16,11 +18,15 @@
 #'   rb_drive_auth(app = google_app)
 #' }
 rb_drive_auth <- function(app = NULL,
-                          scopes = "https://www.googleapis.com/auth/drive.file") {
+                          scopes = "https://www.googleapis.com/auth/drive.file",
+                          path = NULL,
+                          token = NULL) {
   if (is.null(app) == FALSE) {
     googledrive::drive_auth_configure(app = app)
   } else {
     googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
   }
-  googledrive::drive_auth(scopes = scopes)
+  googledrive::drive_auth(scopes = scopes, 
+                          path = path,
+                          token = token)
 }

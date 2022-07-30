@@ -24,9 +24,6 @@ prevent infinite loops.}
 
 \item{base_folder}{Name of base folder, defaults to `rbackupr`}
 }
-\value{
-
-}
 \description{
 Based only on cached data-
 }

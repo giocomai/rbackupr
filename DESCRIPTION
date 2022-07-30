@@ -31,5 +31,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 URL: https://giocomai.github.io/rbackupr/

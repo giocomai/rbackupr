@@ -17,9 +17,6 @@ rb_drive_find_base_folder(
 
 \item{cache}{Logical, defaults to TRUE. Can be se to NULL, and managed with `rb_enable_cache()` / `rb_disable_cache()`}
 }
-\value{
-
-}
 \description{
 Create or get base folder
 }
