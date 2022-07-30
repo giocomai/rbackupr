@@ -65,7 +65,7 @@ remotes::install_github("giocomai/rbackupr")
 
 In order to show how this package works, we will first create some files with random data in the temporary folder. So this is how our base folder looks like: a main folder, with some sub-folders, and some files within each of them.
 
-```{r}
+```{r example_folder_tree, eval=TRUE}
 library("rbackupr")
 base_temp_folder <- fs::dir_create(fs::path(tempdir(),
                                             "rbackupr_testing"))
@@ -133,13 +133,13 @@ The following steps are based on the basic idea of caching locally key informati
 
 For the base folder, under which all projects are expected to be located, only name and dribble id are stored. Indeed, they have no "parent folder".
 
-```{r}
+```{r eval=FALSE}
 rb_drive_find_base_folder()
 ```
 Even if all projects are expected to be located under a single base folder, local cache for them stores also the id of the base folder as `parent_id`.
 
 
-```{r}
+```{r eval=FALSE}
 rb_get_project()
 ```
 
@@ -147,14 +147,14 @@ Under the project folder, the real folders and files that are part of the backup
 
 We can see the folders included in the base project with:
 
-```{r}
+```{r eval=FALSE}
 rb_get_project() %>% 
   rb_get_folders()
 ```
 
 Then, for files, more details are stored in cache, including:
 
-```{r}
+```{r eval=FALSE}
 rb_get_project() %>% 
   rb_get_folders() %>% 
   dplyr::slice(1) %>% 
@@ -205,6 +205,9 @@ Once authenticated, you can still use `googledrive`. Keep in mind that some thin
 
 For example, listing all files with `googledrive::drive_ls()` will only list files created with this app.
 
+## Dockerfile
+
+This repository includes a Dockerfile. It has been created with `dockerfiler::dock_from_desc()`.
 
 ## License
 

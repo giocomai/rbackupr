@@ -166,8 +166,8 @@ doesn’t yet exist.
 
 ``` r
 rb_set_project(project = "rbackupr_testing") # this will set the project for the current session
-
-rb_drive_create_project(create = TRUE) # if it already exists, it just returns its dribble
+rb_drive_auth()
+rb_get_project(create = TRUE) # if it already exists, it just returns its dribble
 ```
 
 At this stage, among all your files and folder on Google Drive, you
@@ -306,6 +306,11 @@ Google Drive given by this app.
 
 For example, listing all files with `googledrive::drive_ls()` will only
 list files created with this app.
+
+## Dockerfile
+
+This repository includes a Dockerfile. It has been created with
+`dockerfiler::dock_from_desc()`.
 
 ## License
 
