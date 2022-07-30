@@ -45,5 +45,10 @@ if (interactive()) {
 }
 }
 
+\dontrun{
+if (interactive()) {
+rb_drive_create_project(project = "example")
+}
+}
 rb_get_project(project = "example")
 }

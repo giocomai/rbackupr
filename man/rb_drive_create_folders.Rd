@@ -27,9 +27,6 @@ one: name of the project.}
 newly updated files or folders, otherwise it assumes that only files and
 folders listed in cache exist online.}
 }
-\value{
-
-}
 \description{
 Create missing folders and get data frame with identifiers of all given folders
 }

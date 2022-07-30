@@ -103,11 +103,11 @@ rb_drive_find_project <- function(project = NULL,
 
 
 #' @rdname rb_drive_find_project
+#' @export
 #' @examples 
 #' \dontrun{
 #' if (interactive()) {
 #' rb_drive_create_project(project = "example")
-#' @export
 #' }
 #' }
 rb_drive_create_project <- rb_drive_find_project
