@@ -19,18 +19,20 @@
 #' }
 rb_drive_auth <- function(app = NULL,
                           scopes = "https://www.googleapis.com/auth/drive.file",
+                          email = gargle::gargle_oauth_email(),
+                          cache = gargle::gargle_oauth_cache(),
+                          use_oob = gargle::gargle_oob_default(),
                           path = NULL,
                           token = NULL) {
   if (is.null(app) == FALSE) {
-    googledrive::drive_auth_configure(app = app, 
-                                      path = path,
-                                      token = token)
+    googledrive::drive_auth_configure(app = app)
   } else {
-    googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app, 
-                                      path = path,
-                                      token = token)
+    googledrive::drive_auth_configure(app = rbackupr::rbackupr_google_app)
   }
   googledrive::drive_auth(scopes = scopes, 
                           path = path,
-                          token = token)
+                          token = token,
+                          email = email,
+                          cache = cache,
+                          use_oob = use_oob)
 }

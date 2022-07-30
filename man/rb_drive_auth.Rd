@@ -7,6 +7,9 @@
 rb_drive_auth(
   app = NULL,
   scopes = "https://www.googleapis.com/auth/drive.file",
+  email = gargle::gargle_oauth_email(),
+  cache = gargle::gargle_oauth_cache(),
+  use_oob = gargle::gargle_oob_default(),
   path = NULL,
   token = NULL
 )
@@ -15,6 +18,26 @@ rb_drive_auth(
 \item{app}{A Google app. See example, and dedicated gargle documentation.}
 
 \item{scopes}{Defaults to `https://www.googleapis.com/auth/drive.file`. See Google api documentation for details}
+
+\item{email}{Optional. Allows user to target a specific Google identity. If
+specified, this is used for token lookup, i.e. to determine if a suitable
+token is already available in the cache. If no such token is found, \code{email}
+is used to pre-select the targetted Google identity in the OAuth chooser.
+Note, however, that the email associated with a token when it's cached is
+always determined from the token itself, never from this argument. Use \code{NA}
+or \code{FALSE} to match nothing and force the OAuth dance in the browser. Use
+\code{TRUE} to allow email auto-discovery, if exactly one matching token is
+found in the cache. Specify just the domain with a glob pattern, e.g.
+\code{"*@example.com"}, to create code that "just works" for both
+\code{alice@example.com} and \code{bob@example.com}. Defaults to the option named
+"gargle_oauth_email", retrieved by \code{\link[gargle:gargle_options]{gargle_oauth_email()}}.}
+
+\item{cache}{Specifies the OAuth token cache. Defaults to the option named
+"gargle_oauth_cache", retrieved via \code{\link[gargle:gargle_options]{gargle_oauth_cache()}}.}
+
+\item{use_oob}{Whether to prefer "out of band" authentication. Defaults to
+the option named "gargle_oob_default", retrieved via
+\code{\link[gargle:gargle_options]{gargle_oob_default()}}.}
 
 \item{path}{JSON identifying the service account, in one of the forms
 supported for the \code{txt} argument of \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} (typically, a
