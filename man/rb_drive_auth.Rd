@@ -6,13 +6,24 @@
 \usage{
 rb_drive_auth(
   app = NULL,
-  scopes = "https://www.googleapis.com/auth/drive.file"
+  scopes = "https://www.googleapis.com/auth/drive.file",
+  path = NULL,
+  token = NULL
 )
 }
 \arguments{
 \item{app}{A Google app. See example, and dedicated gargle documentation.}
 
 \item{scopes}{Defaults to `https://www.googleapis.com/auth/drive.file`. See Google api documentation for details}
+
+\item{path}{JSON identifying the service account, in one of the forms
+supported for the \code{txt} argument of \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} (typically, a
+file path or JSON string).}
+
+\item{token}{A token with class \link[httr:Token-class]{Token2.0} or an object of
+httr's class \code{request}, i.e. a token that has been prepared with
+\code{\link[httr:config]{httr::config()}} and has a \link[httr:Token-class]{Token2.0} in the
+\code{auth_token} component.}
 }
 \value{
 Nothing, used for its side effects, i.e. logging in your Google account.
