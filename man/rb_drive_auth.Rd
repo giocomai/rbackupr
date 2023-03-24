@@ -30,14 +30,13 @@ or \code{FALSE} to match nothing and force the OAuth dance in the browser. Use
 found in the cache. Specify just the domain with a glob pattern, e.g.
 \code{"*@example.com"}, to create code that "just works" for both
 \code{alice@example.com} and \code{bob@example.com}. Defaults to the option named
-"gargle_oauth_email", retrieved by \code{\link[gargle:gargle_options]{gargle_oauth_email()}}.}
+"gargle_oauth_email", retrieved by \code{\link[gargle:gargle_oauth_email]{gargle_oauth_email()}}.}
 
 \item{cache}{Specifies the OAuth token cache. Defaults to the option named
-"gargle_oauth_cache", retrieved via \code{\link[gargle:gargle_options]{gargle_oauth_cache()}}.}
+\code{"gargle_oauth_cache"}, retrieved via \code{\link[gargle:gargle_oauth_cache]{gargle_oauth_cache()}}.}
 
-\item{use_oob}{Whether to prefer "out of band" authentication. Defaults to
-the option named "gargle_oob_default", retrieved via
-\code{\link[gargle:gargle_options]{gargle_oob_default()}}.}
+\item{use_oob}{Whether to prefer out-of-band authentication. Defaults to the
+value returned by \code{\link[gargle:gargle_oob_default]{gargle_oob_default()}}.}
 
 \item{path}{JSON identifying the service account, in one of the forms
 supported for the \code{txt} argument of \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} (typically, a
