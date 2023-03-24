@@ -143,7 +143,7 @@ rb_backup <- function(path,
   
   ## Process and create folders only if they include relevant files
   
-  if (is.null(glob) = FALSE) {
+  if (is.null(glob) == FALSE) {
     folders_with_relevant_files_l <- purrr::map_lgl(
       .x = folders_to_process$full_path,
       .f = function(current_folder) {
