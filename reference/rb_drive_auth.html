@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rbackupr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,9 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/getting_started.html">Getting_started</a>
   </div>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -49,7 +52,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rb_drive_auth</span><span class="op">(</span></span>
-<span>  app <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  client <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  scopes <span class="op">=</span> <span class="st">"https://www.googleapis.com/auth/drive.file"</span>,</span>
 <span>  email <span class="op">=</span> <span class="fu">gargle</span><span class="fu">::</span><span class="fu"><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oauth_email</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cache <span class="op">=</span> <span class="fu">gargle</span><span class="fu">::</span><span class="fu"><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oauth_cache</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -61,8 +64,8 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>app</dt>
-<dd><p>A Google app. See example, and dedicated gargle documentation.</p></dd>
+    <dl><dt>client</dt>
+<dd><p>A Google client. See example, and dedicated gargle documentation.</p></dd>
 
 
 <dt>scopes</dt>
@@ -70,18 +73,24 @@
 
 
 <dt>email</dt>
-<dd><p>Optional. Allows user to target a specific Google identity. If
-specified, this is used for token lookup, i.e. to determine if a suitable
-token is already available in the cache. If no such token is found, <code>email</code>
-is used to pre-select the targetted Google identity in the OAuth chooser.
-Note, however, that the email associated with a token when it's cached is
-always determined from the token itself, never from this argument. Use <code>NA</code>
-or <code>FALSE</code> to match nothing and force the OAuth dance in the browser. Use
-<code>TRUE</code> to allow email auto-discovery, if exactly one matching token is
-found in the cache. Specify just the domain with a glob pattern, e.g.
-<code>"*@example.com"</code>, to create code that "just works" for both
-<code>alice@example.com</code> and <code>bob@example.com</code>. Defaults to the option named
-"gargle_oauth_email", retrieved by <code><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oauth_email()</a></code>.</p></dd>
+<dd><p>Optional. If specified, <code>email</code> can take several different
+forms:</p><ul><li><p><code>"jane@gmail.com"</code>, i.e. an actual email address. This allows the user to
+target a specific Google identity. If specified, this is used for token
+lookup, i.e. to determine if a suitable token is already available in the
+cache. If no such token is found, <code>email</code> is used to pre-select the targeted
+Google identity in the OAuth chooser. (Note, however, that the email
+associated with a token when it's cached is always determined from the token
+itself, never from this argument).</p></li>
+<li><p><code>"*@example.com"</code>, i.e. a domain-only glob pattern. This can be helpful if
+you need code that "just works" for both <code>alice@example.com</code> and
+<code>bob@example.com</code>.</p></li>
+<li><p><code>TRUE</code> means that you are approving email auto-discovery. If exactly one
+matching token is found in the cache, it will be used.</p></li>
+<li><p><code>FALSE</code> or <code>NA</code> mean that you want to ignore the token cache and force a
+new OAuth dance in the browser.</p></li>
+</ul><p>Defaults to the option named <code>"gargle_oauth_email"</code>, retrieved by
+<code><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oauth_email()</a></code> (unless a wrapper package implements different
+default behavior).</p></dd>
 
 
 <dt>cache</dt>
@@ -90,8 +99,17 @@ found in the cache. Specify just the domain with a glob pattern, e.g.
 
 
 <dt>use_oob</dt>
-<dd><p>Whether to prefer out-of-band authentication. Defaults to the
-value returned by <code><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oob_default()</a></code>.</p></dd>
+<dd><p>Whether to use out-of-band authentication (or, perhaps, a
+variant implemented by gargle and known as "pseudo-OOB") when first
+acquiring the token. Defaults to the value returned by
+<code><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oob_default()</a></code>. Note that (pseudo-)OOB auth only affects
+the initial OAuth dance. If we retrieve (and possibly refresh) a
+cached token, <code>use_oob</code> has no effect.</p>
+<p>If the OAuth client is provided implicitly by a wrapper package, its type
+probably defaults to the value returned by
+<code><a href="https://gargle.r-lib.org/reference/gargle_options.html" class="external-link">gargle_oauth_client_type()</a></code>. You can take control of the client
+type by setting <code>options(gargle_oauth_client_type = "web")</code> or
+<code>options(gargle_oauth_client_type = "installed")</code>.</p></dd>
 
 
 <dt>path</dt>
@@ -117,12 +135,12 @@ httr's class <code>request</code>, i.e. a token that has been prepared with
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">google_app</span> <span class="op">&lt;-</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html" class="external-link">oauth_app</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">google_client</span> <span class="op">&lt;-</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html" class="external-link">oauth_app</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"my-very-own-google-app"</span>,</span></span>
 <span class="r-in"><span>    key <span class="op">=</span> <span class="st">"123456789.apps.googleusercontent.com"</span>,</span></span>
 <span class="r-in"><span>    secret <span class="op">=</span> <span class="st">"abcdefghijklmnopqrstuvwxyz"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">rb_drive_auth</span><span class="op">(</span>app <span class="op">=</span> <span class="va">google_app</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">rb_drive_auth</span><span class="op">(</span><span class="va">google_client</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
