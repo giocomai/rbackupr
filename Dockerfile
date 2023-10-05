@@ -1,6 +1,6 @@
 FROM rocker/r-ver:4.1.3
 RUN apt-get update
-RUN apt-get install -y  git-core libcurl4-openssl-dev libgit2-dev libicu-dev libssl-dev make pandoc pandoc-citeproc zlib1g-dev
+RUN apt-get install -y git-core libcurl4-openssl-dev libgit2-dev libicu-dev libssl-dev make pandoc pandoc-citeproc zlib1g-dev
 RUN apt-get install -y xdg-utils --fix-missing
 RUN rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/local/lib/R/etc/ /usr/lib/R/etc/
