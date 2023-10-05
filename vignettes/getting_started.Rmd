@@ -24,8 +24,10 @@ library("rbackupr")
 ```{r}
 rb_drive_create_project(project = "testing_pics", create = TRUE)
 
-rb_backup(path = "~/Pictures/Webcam",
-          project = "testing_pics",
-          glob = "*.png")
+rb_backup(
+  path = "~/Pictures/Webcam",
+  project = "testing_pics",
+  glob = "*.png"
+)
 ```
 

@@ -29,10 +29,12 @@ rb_drive_auth <- function(client = NULL,
   } else {
     googledrive::drive_auth_configure(client = rbackupr_client)
   }
-  googledrive::drive_auth(scopes = scopes, 
-                          path = path,
-                          token = token,
-                          email = email,
-                          cache = cache,
-                          use_oob = use_oob)
+  googledrive::drive_auth(
+    scopes = scopes,
+    path = path,
+    token = token,
+    email = email,
+    cache = cache,
+    use_oob = use_oob
+  )
 }

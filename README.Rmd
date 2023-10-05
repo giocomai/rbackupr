@@ -67,34 +67,42 @@ In order to show how this package works, we will first create some files with ra
 
 ```{r example_folder_tree, eval=TRUE}
 library("rbackupr")
-base_temp_folder <- fs::dir_create(fs::path(tempdir(),
-                                            "rbackupr_testing"))
+base_temp_folder <- fs::dir_create(fs::path(
+  tempdir(),
+  "rbackupr_testing"
+))
 
-subfolder_names <- stringr::str_c("data_",
-                                  sample(x = 10:100, size = 3, replace = FALSE))
+subfolder_names <- stringr::str_c(
+  "data_",
+  sample(x = 10:100, size = 3, replace = FALSE)
+)
 
 purrr::walk(
   .x = subfolder_names,
   .f = function(x) {
     current_folder <- fs::path(base_temp_folder, x)
     fs::dir_create(path = current_folder)
-    current_number <- stringr::str_extract(string = x, pattern = "[[:digit:]]+") %>% 
+    current_number <- stringr::str_extract(string = x, pattern = "[[:digit:]]+") %>%
       as.numeric()
-    
+
     purrr::walk(
       .x = rep(NA, sample(x = 2:5, size = 1)),
-      .f = function(x){
-        readr::write_csv(x = tibble::tibble(numbers = rnorm(n = 10, mean = current_number)), 
-                         file = fs::file_temp(pattern = stringr::str_c("spreadsheet_", current_number, "_"),
-                                              tmp_dir = current_folder,
-                                              ext = "csv"))
-      })
-  })
+      .f = function(x) {
+        readr::write_csv(
+          x = tibble::tibble(numbers = rnorm(n = 10, mean = current_number)),
+          file = fs::file_temp(
+            pattern = stringr::str_c("spreadsheet_", current_number, "_"),
+            tmp_dir = current_folder,
+            ext = "csv"
+          )
+        )
+      }
+    )
+  }
+)
 
 
 fs::dir_tree(base_temp_folder)
-
-
 ```
 
 
@@ -105,9 +113,11 @@ By default, `rbackupr` does not cache metadata files and folders it stores on Go
 library("rbackupr")
 rb_enable_cache()
 
-rb_set_cache_folder(path = fs::path(fs::path_home_r(),
-                                    "R",
-                                    "rb_data"))
+rb_set_cache_folder(path = fs::path(
+  fs::path_home_r(),
+  "R",
+  "rb_data"
+))
 
 rb_create_cache_folder(ask = FALSE)
 ```
@@ -123,7 +133,6 @@ So the first step you need to take, is set a project for the current session, an
 rb_set_project(project = "rbackupr_testing") # this will set the project for the current session
 rb_drive_auth()
 rb_get_project(create = TRUE) # if it already exists, it just returns its dribble
-
 ```
 At this stage, among all your files and folder on Google Drive, you should expect to find a folder called `rbackupr` by default (you can customise this in `rb_drive_create_project()`). Within that folder, you will find another folder, `rbackupr_testing` (the one we set as project). All the files you backup from now on in the current session will be located under this folder. 
 
@@ -148,16 +157,16 @@ Under the project folder, the real folders and files that are part of the backup
 We can see the folders included in the base project with:
 
 ```{r eval=FALSE}
-rb_get_project() %>% 
+rb_get_project() %>%
   rb_get_folders()
 ```
 
 Then, for files, more details are stored in cache, including:
 
 ```{r eval=FALSE}
-rb_get_project() %>% 
-  rb_get_folders() %>% 
-  dplyr::slice(1) %>% 
+rb_get_project() %>%
+  rb_get_folders() %>%
+  dplyr::slice(1) %>%
   rb_get_files()
 ```
 
